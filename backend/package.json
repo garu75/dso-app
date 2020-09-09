@@ -1,0 +1,22 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "NodeJS backend server for the DSO App.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "tsc": "tsc"
+  },
+  "keywords": [
+    "backend",
+    "cloud",
+    "dso"
+  ],
+  "author": "garu75",
+  "license": "ISC",
+  "dependencies": {
+    "@types/express": "^4.17.8",
+    "express": "^4.17.1",
+    "typescript": "^4.0.2"
+  }
+}
