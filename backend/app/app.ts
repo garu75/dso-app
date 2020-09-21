@@ -1,10 +1,10 @@
 import express from 'express';
 import { ApolloServer, gql } from 'apollo-server-express';
 import mongoose from 'mongoose';
-import User from './models/User';
 import dotenv from 'dotenv';
 import typeDefs from './schema';
 import resolvers from './resolvers';
+import { UserModel } from './models/users/users.model';
 
 // Initialise environment
 dotenv.config();
@@ -12,7 +12,24 @@ dotenv.config();
 
 // Create a new express application instance
 const app: express.Application = express();
-const server = new ApolloServer({ typeDefs, resolvers });
+const server = new ApolloServer({ 
+  typeDefs, 
+  resolvers,
+  context: async ({ req, res }) => {
+    const cookies = req.headers.cookie?.split('=');
+
+    const token = cookies ? 
+      cookies[cookies.findIndex(val => val === 'authToken') + 1] 
+      : '';
+
+    try {
+      const user = await UserModel.findByToken(token);
+      return { user, res };
+    } catch(err) {
+      throw new Error(err);
+    }
+  }
+});
 server.applyMiddleware({ app });
 
 //Connect MongoDB
@@ -29,20 +46,6 @@ const connect = mongoose
 app.get('/', function (req, res) {
   res.send('Test success');
 });
-
-// server.js
-app.get("/users", async (req, res) => {
-  const users = await User.find();
-
-  res.json(users);
- });
-
- app.get("/user-create", async (req, res) => {
-  const user = new User({ username: "userTest" });
-  await user.save().then(() => console.log('User created'));
-  
-  res.send("User created \n");
- });
 
 const PORT = process.env.PORT;
 
