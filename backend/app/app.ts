@@ -21,12 +21,11 @@ const server = new ApolloServer({
     const token = cookies ? 
       cookies[cookies.findIndex(val => val === 'authToken') + 1] 
       : '';
-
     try {
       const user = await UserModel.findByToken(token);
       return { user, res };
     } catch(err) {
-      throw new Error(err);
+      return { user: null, res};
     }
   }
 });

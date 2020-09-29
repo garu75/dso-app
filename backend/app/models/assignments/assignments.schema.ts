@@ -20,6 +20,7 @@ const AssigmentSchema = new Schema({
     ],
     trim: true,
   },
+  description: {type: String },
   eventStartTime: { type: Date },
   eventEndTime: { type: Date },
   skillsRequired: { type: [String] },

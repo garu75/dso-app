@@ -4,6 +4,7 @@ export interface IAssignment {
   title: string;
   assignmentType: string;
   frequency: string;
+  description: string;
   eventStartTime: Date;
   eventEndTime: Date;
   skillsRequired: string[];
