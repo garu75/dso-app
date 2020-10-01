@@ -9,6 +9,7 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     title: {
       fontSize: 20,
+      fontWeight: 700,
     },
     subtitle: {
       fontSize: 14,
@@ -72,7 +73,7 @@ const EngagementCard = () => {
     <Box className={classes.cardContainer}>
       <Box className={classes.topCardPartition}>
         <Box className={classes.titlingTextContainer}>
-          <Typography className={classes.title}><strong>Visual Aid</strong></Typography>
+          <Typography className={classes.title}>Visual Aid</Typography>
           <Typography className={classes.subtitle}>Insert short description here</Typography>
         </Box>
         <FavoriteIcon className={classes.heartIcon} fontSize='large' />
