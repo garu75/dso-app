@@ -20,6 +20,12 @@ const Constants = {
   MAJOR_COMPUTING: 'computing',
   MAJOR_BUSINESS: 'business',
   MAJOR_ARTS: 'arts',
+
+  // Assignment Status
+  STATUS_UNASSIGNED: 'unassigned',
+  STATUS_ACCEPTED: 'accepted',
+  STATUS_COMPLETED: 'completed',
+  STATUS_EXPIRED: 'expired'
 };
 
 export default Constants;

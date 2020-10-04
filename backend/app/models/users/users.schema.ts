@@ -6,12 +6,19 @@ import { findByToken } from "./users.statics";
 const ObjectId = Schema.Types.ObjectId;
 
 const UserSchema = new Schema({
-  name: { type: String, max: 50, index: true },
   email: { type: String, trim: true, unique: true },
+  name: { type: String, max: 50 },
   password: { type: String, min: 5, required: true },
-  completedAssignments: { type: [{type: ObjectId, ref: 'AssignmentModel'}] },
-  acceptedAssignments: { type: [{type: ObjectId, ref: 'AssignmentModel'}] },
-  savedAssignments: { type: [{type: ObjectId, ref: 'AssignmentModel'}] },
+  completedAssignments: { 
+    type: [{type: ObjectId, ref: 'assignment' }],
+  },
+  acceptedAssignments: { 
+    type: [{type: ObjectId, ref: 'assignment' }],
+    
+  },
+  savedAssignments: { 
+    type: [{type: ObjectId, ref: 'assignment' }],
+  },
   token: {
     type: String,
   },

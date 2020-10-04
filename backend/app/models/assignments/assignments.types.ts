@@ -1,3 +1,4 @@
+import { Schema } from 'mongoose';
 import { Document, Model } from "mongoose";
 
 export interface IAssignment {
@@ -12,6 +13,8 @@ export interface IAssignment {
   location: string;
   major: string;
   needMajorMatch: boolean;
+  status: string;
+  creator: Schema.Types.ObjectId;
 }
 export interface IAssignmentDocument extends IAssignment, Document {
 }

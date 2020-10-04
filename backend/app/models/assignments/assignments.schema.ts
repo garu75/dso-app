@@ -1,8 +1,10 @@
 import { Schema } from 'mongoose';
 import Constants from '../../../../common/Constants';
 
+const ObjectId = Schema.Types.ObjectId;
+
 const AssigmentSchema = new Schema({
-  title: { type: String, max: 50, index: true },
+  title: { type: String, max: 50, text: true },
   assignmentType: {
     type: String,
     enum: [
@@ -20,17 +22,28 @@ const AssigmentSchema = new Schema({
     ],
     trim: true,
   },
-  description: {type: String },
+  description: { type: String },
   eventStartTime: { type: Date },
   eventEndTime: { type: Date },
   skillsRequired: { type: [String] },
-  tags:{ type: [String] },
+  tags: { type: [String] },
   location: { type: String, required: true },
   major: {
     type: String,
     enum: []
   },
-  needMajorMatch: { type: Boolean }
+  needMajorMatch: { type: Boolean },
+  status: {
+    type: String,
+    default: Constants.STATUS_UNASSIGNED,
+    enum: [
+      Constants.STATUS_UNASSIGNED,
+      Constants.STATUS_ACCEPTED,
+      Constants.STATUS_COMPLETED,
+      Constants.STATUS_EXPIRED
+    ]
+  },
+  creator: { type: ObjectId, ref: "UserModel" }
 });
 
 export default AssigmentSchema;

@@ -36,6 +36,7 @@ const connect = mongoose
   .connect(process.env.MONGO_SECRET || '', {
     useNewUrlParser: true,
     useUnifiedTopology: true,
+    autoIndex: true,
     useCreateIndex: true,
     useFindAndModify: false,
   })

@@ -5,18 +5,36 @@ const typeDefs = gql`
   
   type Query {
     login(email: String!, password: String!): User
-    register(name: String!, email: String!, password: String!): User
+    register(user: UserInput!): User
+    getMyInfo: User
     getAssignment(_id: ID): Assignment
     getAllAssignments: [Assignment]
+    searchAssignments(searchString: String): [Assignment]
   }
   type Mutation {
     createAssignment(assignment: AssignmentInput!): Assignment
     updateAssignment(assignment: AssignmentInput!): Assignment
     deleteAssignment(_id: ID): Boolean
+    acceptAssignment(assignmentId: ID): User
+    completeAssignment(assignmentId: ID): User
+    saveAssignment(assignmentId: ID): User
+  }
+  input UserInput {
+    name: String!
+    email: String!
+    password: String!
+    skills: [String]
+    role: String
+    major: String
   }
   type User {
     name: String
     email: String
+    skills: [String]
+    role: String
+    completedAssignments: [Assignment]
+    acceptedAssignments: [Assignment]
+    savedAssignments: [Assignment]
   }
   input AssignmentInput {
     _id: ID
@@ -45,6 +63,7 @@ const typeDefs = gql`
     tags: [String]
     major: String
     needMajorMatch: Boolean
+    creator: ID
   }
 `;
 
