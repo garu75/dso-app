@@ -5,6 +5,10 @@ import EventNoteIcon from '@material-ui/icons/EventNote';
 import ScheduleIcon from '@material-ui/icons/Schedule';
 import RoomIcon from '@material-ui/icons/Room';
 
+interface EngagementCardProps {
+  name: string;
+}
+
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     title: {
@@ -67,13 +71,14 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-const EngagementCard = () => {
+const EngagementCard = (props: EngagementCardProps) => {
+  const { name } = props;
   const classes = useStyles();
   return (
     <Box className={classes.cardContainer}>
       <Box className={classes.topCardPartition}>
         <Box className={classes.titlingTextContainer}>
-          <Typography className={classes.title}>Visual Aid</Typography>
+          <Typography className={classes.title}>{name}</Typography>
           <Typography className={classes.subtitle}>Insert short description here</Typography>
         </Box>
         <FavoriteIcon className={classes.heartIcon} fontSize='large' />
@@ -93,7 +98,7 @@ const EngagementCard = () => {
         </Box>
 
       </Box>
-      <Button classes={{ root: classes.button, text: classes.buttonText}}>Learn More</Button>
+      <Button classes={{ root: classes.button, text: classes.buttonText }}>Learn More</Button>
     </Box>
   );
 }

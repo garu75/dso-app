@@ -1,10 +1,25 @@
-import React from 'react';
+import React, { useState } from 'react';
 import MenuIcon from '@material-ui/icons/Menu';
 import { createStyles, makeStyles, Theme, ThemeProvider } from '@material-ui/core/styles';
-import { createMuiTheme } from '@material-ui/core/styles';
-import { AppBar, Toolbar, IconButton, Typography, Box } from '@material-ui/core';
+import { AppBar, Toolbar, IconButton, Typography, Box, Grid } from '@material-ui/core';
+import InfiniteScroll from 'react-infinite-scroller';
+
 import EngagementCard from '../components/EngagementCard';
 import appTheme from '../theme/globalTheme';
+
+// Start of test data
+const data = [
+  { key: 0, name: 'One' },
+  { key: 1, name: 'Two' },
+  { key: 2, name: 'Three' },
+  { key: 3, name: 'Four' },
+  { key: 4, name: 'Five' },
+  { key: 5, name: 'Six' },
+  { key: 6, name: 'Seven' },
+];
+
+// End of test data
+
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -49,12 +64,38 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     fadedText: {
       color: 'rgba(0,0,0,0.87)'
+    },
+    infiniteScroll: {
+      display: 'flex',
+      justifyContent: 'center',
+    },
+    engagementGrid: {
+      display: 'flex',
+      justifyContent: 'center',
     }
   }),
 );
 
 const EngagementsDisplay = () => {
+  const [engagements, setEngagements] = useState<{name: string, key: number}[]>([]);
+  const [isLoadExisting, setIsLoadExisting] = useState<boolean>(true);
+  const loadData = (page: number) => {
+    if (page === 1) {
+      setEngagements(data.slice(0, 3));
+    } else {
+      setIsLoadExisting(false);
+
+      setEngagements([...engagements].concat(data.slice(3)));
+    }
+  }
   const classes = useStyles();
+
+  const engagementCards: any[] = [];
+  engagements.forEach(({ name, key }) => {
+    engagementCards.push(
+      <EngagementCard name={name} />
+    );
+  });
   return (
     <ThemeProvider theme={appTheme}>
       <AppBar color='primary'>
@@ -65,7 +106,6 @@ const EngagementsDisplay = () => {
           <Typography variant="h6" >
             voltch
         </Typography>
-          {/* <Button color="inherit">Login</Button> */}
         </Toolbar>
       </AppBar>
       <Box className={classes.startTextContainer}>
@@ -81,9 +121,22 @@ const EngagementsDisplay = () => {
 
       {/* TODO: query from backend and display as actual infinite grid list */}
       <Box className={classes.engagementsGridContainer}>
-        <EngagementCard />
-        <EngagementCard />
-        <EngagementCard />
+        <InfiniteScroll
+          pageStart={0}
+          loadMore={loadData}
+          hasMore={isLoadExisting}
+          className={classes.infiniteScroll}
+          >
+          <Grid
+            container
+            direction="row"
+            wrap="wrap"
+            xs={8}
+            className={classes.engagementGrid}
+          >
+            {engagementCards}
+          </Grid>
+        </InfiniteScroll>
       </Box>
 
       <Box className={classes.footerContainer}>
