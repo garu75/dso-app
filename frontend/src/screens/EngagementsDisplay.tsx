@@ -1,25 +1,80 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import MenuIcon from '@material-ui/icons/Menu';
 import { createStyles, makeStyles, Theme, ThemeProvider } from '@material-ui/core/styles';
-import { AppBar, Toolbar, IconButton, Typography, Box, Grid } from '@material-ui/core';
-import InfiniteScroll from 'react-infinite-scroller';
+import { AppBar, Toolbar, IconButton, Typography, Box, Grid, CircularProgress } from '@material-ui/core';
+import InfiniteScroll from 'react-infinite-scroll-component'
+import { useLazyQuery } from '@apollo/client';
 
 import EngagementCard from '../components/EngagementCard';
 import appTheme from '../theme/globalTheme';
 
+import { GET_ASSIGNMENTS, GetAssignmentsVariables, GetAssignmentsData, EngagementFields } from '../gql/queries/GetAssignments';
+
 // Start of test data
 const data = [
   { key: 0, name: 'One' },
-  { key: 1, name: 'Two' },
-  { key: 2, name: 'Three' },
-  { key: 3, name: 'Four' },
-  { key: 4, name: 'Five' },
-  { key: 5, name: 'Six' },
-  { key: 6, name: 'Seven' },
+  { key: 1, title: 'Two' },
+  { key: 2, title: 'Three' },
+  { key: 3, title: 'Four' },
+  { key: 4, title: 'Five' },
+  { key: 5, title: 'Six' },
+  { key: 6, title: 'Seven' },
+  { key: 7, title: 'Seven' },
+  { key: 7, title: 'Seven' },
+  { key: 7, title: 'Seven' },
+  { key: 7, title: 'Seven' },
+  { key: 7, title: 'Seven' },
+  { key: 7, title: 'Seven' },
+  { key: 7, title: 'Seven' },
+  { key: 7, title: 'Seven' },
+  { key: 7, title: 'Seven' },
+  { key: 7, title: 'Seven' },
+  { key: 7, title: 'Seven' },
+  { key: 7, title: 'Seven' },
+  { key: 7, title: 'Seven' },
+  { key: 7, title: 'Seven' },
+  { key: 7, title: 'Seven' },
+  { key: 7, title: 'Seven' },
+  { key: 7, title: 'Seven' },
+  { key: 7, title: 'Seven' },
+  { key: 7, title: 'Seven' },
+  { key: 7, title: 'Seven' },
+  { key: 7, title: 'Seven' },
+  { key: 7, title: 'Seven' },
+  { key: 7, title: 'Seven' },
+  { key: 7, title: 'Seven' },
+  { key: 7, title: 'Seven' },
+  { key: 7, title: 'Seven' },
+  { key: 7, title: 'Seven' },
+  { key: 7, title: 'Seven' },
+  { key: 7, title: 'Seven' },
+  { key: 7, title: 'Seven' },
+  { key: 7, title: 'Seven' },
+  { key: 7, title: 'Seven' },
+  { key: 7, title: 'Seven' },
+  { key: 7, title: 'Seven' },
+  { key: 7, title: 'Seven' },
+  { key: 7, title: 'Seven' },
+  { key: 7, title: 'Seven' },
+  { key: 7, title: 'Seven' },
+  { key: 7, title: 'Seven' },
+  { key: 7, title: 'Seven' },
+  { key: 7, title: 'Seven' },
+  { key: 7, title: 'Seven' },
+  { key: 7, title: 'Seven' },
+  { key: 7, title: 'Seven' },
+  { key: 7, title: 'Seven' },
+  { key: 7, title: 'Seven' },
+  { key: 7, title: 'Seven' },
+  { key: 7, title: 'Seven' },
+  { key: 7, title: 'Seven' },
+  { key: 7, title: 'Seven' },
+  { key: 7, title: 'Seven' },
+  { key: 7, title: 'Seven' },
 ];
 
 // End of test data
-
+const ENGAGEMENTS_PER_PAGE = 5;
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -46,7 +101,7 @@ const useStyles = makeStyles((theme: Theme) =>
       paddingBottom: 32,
       display: 'flex',
       flexDirection: 'row',
-      justifyContent: 'center'
+      justifyContent: 'center',
     },
     footerContainer: {
       height: 264,
@@ -68,7 +123,16 @@ const useStyles = makeStyles((theme: Theme) =>
     infiniteScroll: {
       display: 'flex',
       justifyContent: 'center',
+      // position: 'absolute',
     },
+    // infiniteScroll: {
+    //   display: 'flex',
+    //   justifyContent: 'center',
+    //   backgroundColor: '#f3f3f7',
+    //   paddingTop: 98,
+    //   paddingBottom: 32,
+    //   flexDirection: 'row',
+    // },
     engagementGrid: {
       display: 'flex',
       justifyContent: 'center',
@@ -77,25 +141,32 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 const EngagementsDisplay = () => {
-  const [engagements, setEngagements] = useState<{name: string, key: number}[]>([]);
+  // const [engagements, setEngagements] = useState<{name: string, key: number}[]>([]);
+  const [engagements, setEngagements] = useState<EngagementFields[]>([]);
   const [isLoadExisting, setIsLoadExisting] = useState<boolean>(true);
-  const loadData = (page: number) => {
-    if (page === 1) {
-      setEngagements(data.slice(0, 3));
-    } else {
-      setIsLoadExisting(false);
+  const [lastEngagementId, setLastEngagementId] = useState<string>('');
+  console.log(lastEngagementId);
+  const [getAssignments, { }] = useLazyQuery<GetAssignmentsData, GetAssignmentsVariables>(
+    GET_ASSIGNMENTS,
+    {
+      variables: { startId: lastEngagementId, perPage: ENGAGEMENTS_PER_PAGE },
+      onCompleted: (data) => {
+        console.log('data loaded', data);
+        const lastEngagement = data.result[data.result.length - 1];
+        if (!lastEngagement || lastEngagementId === lastEngagement._id) {
+          setIsLoadExisting(false);
+        } else {
+          setLastEngagementId(lastEngagement._id);
+        }
+        setEngagements([...engagements].concat(data.result));
+      }
+    },
+  );
 
-      setEngagements([...engagements].concat(data.slice(3)));
-    }
-  }
+  useEffect(getAssignments, []);
+  
   const classes = useStyles();
 
-  const engagementCards: any[] = [];
-  engagements.forEach(({ name, key }) => {
-    engagementCards.push(
-      <EngagementCard name={name} />
-    );
-  });
   return (
     <ThemeProvider theme={appTheme}>
       <AppBar color='primary'>
@@ -122,11 +193,13 @@ const EngagementsDisplay = () => {
       {/* TODO: query from backend and display as actual infinite grid list */}
       <Box className={classes.engagementsGridContainer}>
         <InfiniteScroll
-          pageStart={0}
-          loadMore={loadData}
+          next={getAssignments}
+          dataLength={engagements.length}
           hasMore={isLoadExisting}
+          loader={<p>LOADING</p>}
           className={classes.infiniteScroll}
-          >
+          scrollThreshold={0.1}
+        >
           <Grid
             container
             direction="row"
@@ -134,7 +207,9 @@ const EngagementsDisplay = () => {
             xs={8}
             className={classes.engagementGrid}
           >
-            {engagementCards}
+            {engagements.map(({ title }) => {
+              return <EngagementCard name={title} />;
+            })}
           </Grid>
         </InfiniteScroll>
       </Box>
@@ -152,8 +227,6 @@ const EngagementsDisplay = () => {
           <Typography align='left' className={classes.fadedText}>Singapore 119078</Typography>
         </Box>
       </Box>
-
-
     </ThemeProvider>
   );
 }
