@@ -3,7 +3,7 @@ import MenuIcon from '@material-ui/icons/Menu';
 import { createStyles, makeStyles, Theme, ThemeProvider } from '@material-ui/core/styles';
 import { AppBar, Toolbar, IconButton, Typography, Box, Grid, CircularProgress } from '@material-ui/core';
 import InfiniteScroll from 'react-infinite-scroll-component'
-import { useLazyQuery } from '@apollo/client';
+import { useLazyQuery, useQuery } from '@apollo/client';
 
 import EngagementCard from '../components/EngagementCard';
 import appTheme from '../theme/globalTheme';
@@ -11,67 +11,67 @@ import appTheme from '../theme/globalTheme';
 import { GET_ASSIGNMENTS, GetAssignmentsVariables, GetAssignmentsData, EngagementFields } from '../gql/queries/GetAssignments';
 
 // Start of test data
-const data = [
-  { key: 0, name: 'One' },
-  { key: 1, title: 'Two' },
-  { key: 2, title: 'Three' },
-  { key: 3, title: 'Four' },
-  { key: 4, title: 'Five' },
-  { key: 5, title: 'Six' },
-  { key: 6, title: 'Seven' },
-  { key: 7, title: 'Seven' },
-  { key: 7, title: 'Seven' },
-  { key: 7, title: 'Seven' },
-  { key: 7, title: 'Seven' },
-  { key: 7, title: 'Seven' },
-  { key: 7, title: 'Seven' },
-  { key: 7, title: 'Seven' },
-  { key: 7, title: 'Seven' },
-  { key: 7, title: 'Seven' },
-  { key: 7, title: 'Seven' },
-  { key: 7, title: 'Seven' },
-  { key: 7, title: 'Seven' },
-  { key: 7, title: 'Seven' },
-  { key: 7, title: 'Seven' },
-  { key: 7, title: 'Seven' },
-  { key: 7, title: 'Seven' },
-  { key: 7, title: 'Seven' },
-  { key: 7, title: 'Seven' },
-  { key: 7, title: 'Seven' },
-  { key: 7, title: 'Seven' },
-  { key: 7, title: 'Seven' },
-  { key: 7, title: 'Seven' },
-  { key: 7, title: 'Seven' },
-  { key: 7, title: 'Seven' },
-  { key: 7, title: 'Seven' },
-  { key: 7, title: 'Seven' },
-  { key: 7, title: 'Seven' },
-  { key: 7, title: 'Seven' },
-  { key: 7, title: 'Seven' },
-  { key: 7, title: 'Seven' },
-  { key: 7, title: 'Seven' },
-  { key: 7, title: 'Seven' },
-  { key: 7, title: 'Seven' },
-  { key: 7, title: 'Seven' },
-  { key: 7, title: 'Seven' },
-  { key: 7, title: 'Seven' },
-  { key: 7, title: 'Seven' },
-  { key: 7, title: 'Seven' },
-  { key: 7, title: 'Seven' },
-  { key: 7, title: 'Seven' },
-  { key: 7, title: 'Seven' },
-  { key: 7, title: 'Seven' },
-  { key: 7, title: 'Seven' },
-  { key: 7, title: 'Seven' },
-  { key: 7, title: 'Seven' },
-  { key: 7, title: 'Seven' },
-  { key: 7, title: 'Seven' },
-  { key: 7, title: 'Seven' },
-  { key: 7, title: 'Seven' },
-  { key: 7, title: 'Seven' },
-  { key: 7, title: 'Seven' },
-  { key: 7, title: 'Seven' },
-];
+// const data = [
+//   { key: 0, name: 'One' },
+//   { key: 1, title: 'Two' },
+//   { key: 2, title: 'Three' },
+//   { key: 3, title: 'Four' },
+//   { key: 4, title: 'Five' },
+//   { key: 5, title: 'Six' },
+//   { key: 6, title: 'Seven' },
+//   { key: 7, title: 'Seven' },
+//   { key: 7, title: 'Seven' },
+//   { key: 7, title: 'Seven' },
+//   { key: 7, title: 'Seven' },
+//   { key: 7, title: 'Seven' },
+//   { key: 7, title: 'Seven' },
+//   { key: 7, title: 'Seven' },
+//   { key: 7, title: 'Seven' },
+//   { key: 7, title: 'Seven' },
+//   { key: 7, title: 'Seven' },
+//   { key: 7, title: 'Seven' },
+//   { key: 7, title: 'Seven' },
+//   { key: 7, title: 'Seven' },
+//   { key: 7, title: 'Seven' },
+//   { key: 7, title: 'Seven' },
+//   { key: 7, title: 'Seven' },
+//   { key: 7, title: 'Seven' },
+//   { key: 7, title: 'Seven' },
+//   { key: 7, title: 'Seven' },
+//   { key: 7, title: 'Seven' },
+//   { key: 7, title: 'Seven' },
+//   { key: 7, title: 'Seven' },
+//   { key: 7, title: 'Seven' },
+//   { key: 7, title: 'Seven' },
+//   { key: 7, title: 'Seven' },
+//   { key: 7, title: 'Seven' },
+//   { key: 7, title: 'Seven' },
+//   { key: 7, title: 'Seven' },
+//   { key: 7, title: 'Seven' },
+//   { key: 7, title: 'Seven' },
+//   { key: 7, title: 'Seven' },
+//   { key: 7, title: 'Seven' },
+//   { key: 7, title: 'Seven' },
+//   { key: 7, title: 'Seven' },
+//   { key: 7, title: 'Seven' },
+//   { key: 7, title: 'Seven' },
+//   { key: 7, title: 'Seven' },
+//   { key: 7, title: 'Seven' },
+//   { key: 7, title: 'Seven' },
+//   { key: 7, title: 'Seven' },
+//   { key: 7, title: 'Seven' },
+//   { key: 7, title: 'Seven' },
+//   { key: 7, title: 'Seven' },
+//   { key: 7, title: 'Seven' },
+//   { key: 7, title: 'Seven' },
+//   { key: 7, title: 'Seven' },
+//   { key: 7, title: 'Seven' },
+//   { key: 7, title: 'Seven' },
+//   { key: 7, title: 'Seven' },
+//   { key: 7, title: 'Seven' },
+//   { key: 7, title: 'Seven' },
+//   { key: 7, title: 'Seven' },
+// ];
 
 // End of test data
 const ENGAGEMENTS_PER_PAGE = 5;
@@ -123,16 +123,7 @@ const useStyles = makeStyles((theme: Theme) =>
     infiniteScroll: {
       display: 'flex',
       justifyContent: 'center',
-      // position: 'absolute',
     },
-    // infiniteScroll: {
-    //   display: 'flex',
-    //   justifyContent: 'center',
-    //   backgroundColor: '#f3f3f7',
-    //   paddingTop: 98,
-    //   paddingBottom: 32,
-    //   flexDirection: 'row',
-    // },
     engagementGrid: {
       display: 'flex',
       justifyContent: 'center',
@@ -145,11 +136,13 @@ const EngagementsDisplay = () => {
   const [engagements, setEngagements] = useState<EngagementFields[]>([]);
   const [isLoadExisting, setIsLoadExisting] = useState<boolean>(true);
   const [lastEngagementId, setLastEngagementId] = useState<string>('');
-  console.log(lastEngagementId);
-  const [getAssignments, { }] = useLazyQuery<GetAssignmentsData, GetAssignmentsVariables>(
+  const [skipQuery, setSkipQuery] = useState<boolean>(true);
+  console.log(isLoadExisting);
+  const { loading } = useQuery<GetAssignmentsData, GetAssignmentsVariables>(
     GET_ASSIGNMENTS,
     {
       variables: { startId: lastEngagementId, perPage: ENGAGEMENTS_PER_PAGE },
+      skip: skipQuery,
       onCompleted: (data) => {
         console.log('data loaded', data);
         const lastEngagement = data.result[data.result.length - 1];
@@ -157,14 +150,26 @@ const EngagementsDisplay = () => {
           setIsLoadExisting(false);
         } else {
           setLastEngagementId(lastEngagement._id);
+          setEngagements([...engagements].concat(data.result));
         }
-        setEngagements([...engagements].concat(data.result));
+        setSkipQuery(true);
       }
     },
   );
+  const loadData = () => {
+    setSkipQuery(false);
+    console.log('calling loadData');
+    // console.log('data in loadData', data);
+  }
 
-  useEffect(getAssignments, []);
-  
+  // useEffect(loadData, []);
+  // useEffect(() => {
+  //   if (data) {
+  //     setEngagements([...engagements].concat(data.result));
+  //     console.log('data', data);
+  //   }
+  // }, [data]);
+
   const classes = useStyles();
 
   return (
@@ -193,24 +198,23 @@ const EngagementsDisplay = () => {
       {/* TODO: query from backend and display as actual infinite grid list */}
       <Box className={classes.engagementsGridContainer}>
         <InfiniteScroll
-          next={getAssignments}
+          next={loadData}
           dataLength={engagements.length}
           hasMore={isLoadExisting}
           loader={<p>LOADING</p>}
           className={classes.infiniteScroll}
-          scrollThreshold={0.1}
         >
-          <Grid
-            container
-            direction="row"
-            wrap="wrap"
-            xs={8}
-            className={classes.engagementGrid}
-          >
-            {engagements.map(({ title }) => {
-              return <EngagementCard name={title} />;
-            })}
-          </Grid>
+        <Grid
+          container
+          direction="row"
+          wrap="wrap"
+          xs={8}
+          className={classes.engagementGrid}
+        >
+          {engagements.map(({ title, _id }) => {
+            return <EngagementCard name={title} key={_id} />;
+          })}
+        </Grid>
         </InfiniteScroll>
       </Box>
 
