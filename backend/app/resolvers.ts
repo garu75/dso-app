@@ -95,6 +95,20 @@ const resolvers = {
       return AssignmentModel.find()
         .catch(err => { return new Error(err) });
     },
+    getAssignments: (
+      root: any,
+      { startId, perPage }: { startId: Schema.Types.ObjectId, perPage: number },
+      context: any,
+    ) => {
+      if (!startId) {
+        return AssignmentModel.find()
+          .sort({ _id: -1 })
+          .limit(perPage);
+      }
+      return AssignmentModel.find({ _id: { $lt: startId } })
+        .sort({ _id: -1 })
+        .limit(perPage);
+    },
 
     searchAssignments: (root: any, args: { searchString: string }, context: any) => {
       const encapsulatedString = "\"" + args.searchString + "\"";
@@ -135,17 +149,17 @@ const resolvers = {
       if (!user) {
         return new Error("Not Logged In");
       }
-      const assignment = await AssignmentModel.findOneAndUpdate({ 
-          _id: args.assignmentId, 
-          status: Constants.STATUS_UNASSIGNED
-        }, {
-          $set: {
-            status: Constants.STATUS_ACCEPTED
-          }
-        }).exec();
+      const assignment = await AssignmentModel.findOneAndUpdate({
+        _id: args.assignmentId,
+        status: Constants.STATUS_UNASSIGNED
+      }, {
+        $set: {
+          status: Constants.STATUS_ACCEPTED
+        }
+      }).exec();
       if (assignment) {
         return UserModel
-          .findOneAndUpdate({ _id: user._id }, { $addToSet: { acceptedAssignments: args.assignmentId } }, 
+          .findOneAndUpdate({ _id: user._id }, { $addToSet: { acceptedAssignments: args.assignmentId } },
             { new: true })
           .populate(userPopulateFields);
       } else {
@@ -158,7 +172,7 @@ const resolvers = {
       if (!user) {
         return new Error("Not Logged In");
       }
-      const assignment = 
+      const assignment =
         await AssignmentModel.findOne({ _id: assignmentId, status: Constants.STATUS_ACCEPTED }).exec();
 
       if (assignment) {
@@ -173,16 +187,16 @@ const resolvers = {
             acceptedAssignments: assignmentId
           }
         }, { new: true }).populate(userPopulateFields)
-        .then(async updatedUser => {
-          if (updatedUser) {
-            await AssignmentModel.findOneAndUpdate({ _id: assignmentId }, {
-              $set: {
-                status: Constants.STATUS_COMPLETED
-              }
-            }).exec();
-          }
-          return updatedUser;
-        });
+          .then(async updatedUser => {
+            if (updatedUser) {
+              await AssignmentModel.findOneAndUpdate({ _id: assignmentId }, {
+                $set: {
+                  status: Constants.STATUS_COMPLETED
+                }
+              }).exec();
+            }
+            return updatedUser;
+          });
       } else {
         return new Error("Assignment not currently accepted");
       }
@@ -192,18 +206,18 @@ const resolvers = {
       if (!user) {
         return new Error("Not Logged In");
       }
-      const assignment = await AssignmentModel.findOne({ 
-        _id: args.assignmentId, 
+      const assignment = await AssignmentModel.findOne({
+        _id: args.assignmentId,
         status: Constants.STATUS_UNASSIGNED
       }).exec();
-    if (assignment) {
-      return UserModel
-        .findOneAndUpdate({ _id: user._id }, { $addToSet: { savedAssignments: args.assignmentId } }, 
-          { new: true })
-        .populate(userPopulateFields);
-    } else {
-      return new Error("Assignment not available");
-    }
+      if (assignment) {
+        return UserModel
+          .findOneAndUpdate({ _id: user._id }, { $addToSet: { savedAssignments: args.assignmentId } },
+            { new: true })
+          .populate(userPopulateFields);
+      } else {
+        return new Error("Assignment not available");
+      }
     },
   }
 };

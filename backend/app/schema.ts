@@ -9,6 +9,7 @@ const typeDefs = gql`
     getMyInfo: User
     getAssignment(_id: ID): Assignment
     getAllAssignments: [Assignment]
+    getAssignments(startId: ID!, perPage: Int!): [Assignment]
     searchAssignments(searchString: String): [Assignment]
   }
   type Mutation {
