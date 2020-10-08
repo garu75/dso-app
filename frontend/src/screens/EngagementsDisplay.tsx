@@ -1,25 +1,16 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import MenuIcon from '@material-ui/icons/Menu';
 import { createStyles, makeStyles, Theme, ThemeProvider } from '@material-ui/core/styles';
-import { AppBar, Toolbar, IconButton, Typography, Box, Grid } from '@material-ui/core';
-import InfiniteScroll from 'react-infinite-scroller';
+import { AppBar, Toolbar, IconButton, Typography, Box, Grid, CircularProgress } from '@material-ui/core';
+import InfiniteScroll from 'react-infinite-scroll-component'
+import { useLazyQuery, useQuery } from '@apollo/client';
 
 import EngagementCard from '../components/EngagementCard';
 import appTheme from '../theme/globalTheme';
 
-// Start of test data
-const data = [
-  { key: 0, name: 'One' },
-  { key: 1, name: 'Two' },
-  { key: 2, name: 'Three' },
-  { key: 3, name: 'Four' },
-  { key: 4, name: 'Five' },
-  { key: 5, name: 'Six' },
-  { key: 6, name: 'Seven' },
-];
+import { GET_ASSIGNMENTS, GetAssignmentsVariables, GetAssignmentsData, EngagementFields } from '../gql/queries/GetAssignments';
 
-// End of test data
-
+const ENGAGEMENTS_PER_PAGE = 5;
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -46,7 +37,7 @@ const useStyles = makeStyles((theme: Theme) =>
       paddingBottom: 32,
       display: 'flex',
       flexDirection: 'row',
-      justifyContent: 'center'
+      justifyContent: 'center',
     },
     footerContainer: {
       height: 264,
@@ -77,25 +68,37 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 const EngagementsDisplay = () => {
-  const [engagements, setEngagements] = useState<{name: string, key: number}[]>([]);
+  const [engagements, setEngagements] = useState<EngagementFields[]>([]);
   const [isLoadExisting, setIsLoadExisting] = useState<boolean>(true);
-  const loadData = (page: number) => {
-    if (page === 1) {
-      setEngagements(data.slice(0, 3));
-    } else {
-      setIsLoadExisting(false);
-
-      setEngagements([...engagements].concat(data.slice(3)));
-    }
+  const [lastEngagementId, setLastEngagementId] = useState<string>('');
+  const [skipQuery, setSkipQuery] = useState<boolean>(true);
+  const { loading } = useQuery<GetAssignmentsData, GetAssignmentsVariables>(
+    GET_ASSIGNMENTS,
+    {
+      variables: { startId: lastEngagementId, perPage: ENGAGEMENTS_PER_PAGE },
+      skip: skipQuery,
+      onCompleted: (data) => {
+        console.log('data loaded', data);
+        const lastEngagement = data.result[data.result.length - 1];
+        if (!lastEngagement || lastEngagementId === lastEngagement._id) {
+          setIsLoadExisting(false);
+        } else {
+          setLastEngagementId(lastEngagement._id);
+          setEngagements([...engagements].concat(data.result));
+        }
+        setSkipQuery(true);
+      }
+    },
+  );
+  const loadData = () => {
+    setSkipQuery(false);
   }
+
+  // Initial load/query
+  useEffect(loadData, []);
+
   const classes = useStyles();
 
-  const engagementCards: any[] = [];
-  engagements.forEach(({ name, key }) => {
-    engagementCards.push(
-      <EngagementCard name={name} />
-    );
-  });
   return (
     <ThemeProvider theme={appTheme}>
       <AppBar color='primary'>
@@ -119,14 +122,16 @@ const EngagementsDisplay = () => {
         </Typography>
       </Box>
 
-      {/* TODO: query from backend and display as actual infinite grid list */}
       <Box className={classes.engagementsGridContainer}>
         <InfiniteScroll
-          pageStart={0}
-          loadMore={loadData}
+          next={loadData}
+          dataLength={engagements.length}
           hasMore={isLoadExisting}
+          loader={<p>LOADING</p>}
           className={classes.infiniteScroll}
-          >
+        >
+          {/* TODO: The grid isnt properly formatted - loader is appearing in a weird position next to all 
+          the other engagements instead of directly below */}
           <Grid
             container
             direction="row"
@@ -134,7 +139,9 @@ const EngagementsDisplay = () => {
             xs={8}
             className={classes.engagementGrid}
           >
-            {engagementCards}
+            {engagements.map(({ title, _id }) => {
+              return <EngagementCard name={title} key={_id} />;
+            })}
           </Grid>
         </InfiniteScroll>
       </Box>
@@ -152,8 +159,6 @@ const EngagementsDisplay = () => {
           <Typography align='left' className={classes.fadedText}>Singapore 119078</Typography>
         </Box>
       </Box>
-
-
     </ThemeProvider>
   );
 }

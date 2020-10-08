@@ -1,19 +1,22 @@
 import React from 'react';
-import logo from './logo.svg';
+import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
+
 import './App.css';
 import EngagementsDisplay from './screens/EngagementsDisplay';
 
+
+const client = new ApolloClient({
+  uri: 'http://localhost:8080/graphql/', // TODO: extract to env
+  cache: new InMemoryCache(),
+});
+
 function App() {
   return (
-    <div className="App">
-      {/* <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Placeholder page for DSO App
-        </p>
-      </header> */}
-      <EngagementsDisplay />
-    </div>
+    <ApolloProvider client={client}>
+      <div className="App">
+        <EngagementsDisplay />
+      </div>
+    </ApolloProvider>
   );
 }
 
