@@ -4,6 +4,7 @@ import FavoriteIcon from '@material-ui/icons/Favorite';
 import EventNoteIcon from '@material-ui/icons/EventNote';
 import ScheduleIcon from '@material-ui/icons/Schedule';
 import RoomIcon from '@material-ui/icons/Room';
+import { useMediaQuery } from 'react-responsive';
 
 interface EngagementCardProps {
   name: string;
@@ -28,6 +29,18 @@ const useStyles = makeStyles((theme: Theme) =>
       padding: 22,
       marginLeft: 13,
       marginRight: 13,
+      marginTop: 16,
+      marginBottom: 16,
+      borderRadius: 20,
+    },
+    cardContainerMobile: {
+      backgroundColor: '#fff',
+      width: 324,
+      height: 220,
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'flex-start',
+      padding: 22,
       marginTop: 16,
       marginBottom: 16,
       borderRadius: 20,
@@ -72,10 +85,13 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 const EngagementCard = (props: EngagementCardProps) => {
+  const isMobile = useMediaQuery({ query: '(max-width: 1224px)' });
+
+
   const { name } = props;
   const classes = useStyles();
   return (
-    <Box className={classes.cardContainer}>
+    <Box className={isMobile ? classes.cardContainerMobile : classes.cardContainer}>
       <Box className={classes.topCardPartition}>
         <Box className={classes.titlingTextContainer}>
           <Typography className={classes.title}>{name}</Typography>
