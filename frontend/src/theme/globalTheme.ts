@@ -18,4 +18,16 @@ const appTheme = createMuiTheme({
   }
 });
 
+export const appColors = {
+  coral: '#ff6b6c',
+  blueGray: '#5b5f97',
+  turquoise: '#12cdd0',
+  yellow: '#ffc145',
+  white: '#fff',
+  ghostWhite: '#f3f3f7',
+  blushWhite: '#ffebeb',
+  laceWhite: '#fff8eb',
+  azureWhite: '#ecfdfd',
+}
+
 export default appTheme;

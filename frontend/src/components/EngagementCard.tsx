@@ -1,10 +1,11 @@
 import React from 'react';
-import { Box, Button, createStyles, makeStyles, Theme, Typography } from '@material-ui/core';
+import { Box, createStyles, makeStyles, Theme, Typography } from '@material-ui/core';
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import EventNoteIcon from '@material-ui/icons/EventNote';
 import ScheduleIcon from '@material-ui/icons/Schedule';
 import RoomIcon from '@material-ui/icons/Room';
 import { useMediaQuery } from 'react-responsive';
+import LongButton from './LongButton';
 
 interface EngagementCardProps {
   name: string;
@@ -73,14 +74,6 @@ const useStyles = makeStyles((theme: Theme) =>
     detailFieldText: {
       marginLeft: 17,
     },
-    button: { //button root
-      backgroundColor: '#ef7471',
-      borderRadius: 16,
-      width: '100%'
-    },
-    buttonText: {
-      color: '#fff',
-    }
   }),
 );
 
@@ -114,7 +107,7 @@ const EngagementCard = (props: EngagementCardProps) => {
         </Box>
 
       </Box>
-      <Button classes={{ root: classes.button, text: classes.buttonText }}>Learn More</Button>
+      <LongButton buttonText='Learn More' />
     </Box>
   );
 }
