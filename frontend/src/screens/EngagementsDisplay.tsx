@@ -10,70 +10,6 @@ import appTheme from '../theme/globalTheme';
 
 import { GET_ASSIGNMENTS, GetAssignmentsVariables, GetAssignmentsData, EngagementFields } from '../gql/queries/GetAssignments';
 
-// Start of test data
-// const data = [
-//   { key: 0, name: 'One' },
-//   { key: 1, title: 'Two' },
-//   { key: 2, title: 'Three' },
-//   { key: 3, title: 'Four' },
-//   { key: 4, title: 'Five' },
-//   { key: 5, title: 'Six' },
-//   { key: 6, title: 'Seven' },
-//   { key: 7, title: 'Seven' },
-//   { key: 7, title: 'Seven' },
-//   { key: 7, title: 'Seven' },
-//   { key: 7, title: 'Seven' },
-//   { key: 7, title: 'Seven' },
-//   { key: 7, title: 'Seven' },
-//   { key: 7, title: 'Seven' },
-//   { key: 7, title: 'Seven' },
-//   { key: 7, title: 'Seven' },
-//   { key: 7, title: 'Seven' },
-//   { key: 7, title: 'Seven' },
-//   { key: 7, title: 'Seven' },
-//   { key: 7, title: 'Seven' },
-//   { key: 7, title: 'Seven' },
-//   { key: 7, title: 'Seven' },
-//   { key: 7, title: 'Seven' },
-//   { key: 7, title: 'Seven' },
-//   { key: 7, title: 'Seven' },
-//   { key: 7, title: 'Seven' },
-//   { key: 7, title: 'Seven' },
-//   { key: 7, title: 'Seven' },
-//   { key: 7, title: 'Seven' },
-//   { key: 7, title: 'Seven' },
-//   { key: 7, title: 'Seven' },
-//   { key: 7, title: 'Seven' },
-//   { key: 7, title: 'Seven' },
-//   { key: 7, title: 'Seven' },
-//   { key: 7, title: 'Seven' },
-//   { key: 7, title: 'Seven' },
-//   { key: 7, title: 'Seven' },
-//   { key: 7, title: 'Seven' },
-//   { key: 7, title: 'Seven' },
-//   { key: 7, title: 'Seven' },
-//   { key: 7, title: 'Seven' },
-//   { key: 7, title: 'Seven' },
-//   { key: 7, title: 'Seven' },
-//   { key: 7, title: 'Seven' },
-//   { key: 7, title: 'Seven' },
-//   { key: 7, title: 'Seven' },
-//   { key: 7, title: 'Seven' },
-//   { key: 7, title: 'Seven' },
-//   { key: 7, title: 'Seven' },
-//   { key: 7, title: 'Seven' },
-//   { key: 7, title: 'Seven' },
-//   { key: 7, title: 'Seven' },
-//   { key: 7, title: 'Seven' },
-//   { key: 7, title: 'Seven' },
-//   { key: 7, title: 'Seven' },
-//   { key: 7, title: 'Seven' },
-//   { key: 7, title: 'Seven' },
-//   { key: 7, title: 'Seven' },
-//   { key: 7, title: 'Seven' },
-// ];
-
-// End of test data
 const ENGAGEMENTS_PER_PAGE = 5;
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -132,12 +68,10 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 const EngagementsDisplay = () => {
-  // const [engagements, setEngagements] = useState<{name: string, key: number}[]>([]);
   const [engagements, setEngagements] = useState<EngagementFields[]>([]);
   const [isLoadExisting, setIsLoadExisting] = useState<boolean>(true);
   const [lastEngagementId, setLastEngagementId] = useState<string>('');
   const [skipQuery, setSkipQuery] = useState<boolean>(true);
-  console.log(isLoadExisting);
   const { loading } = useQuery<GetAssignmentsData, GetAssignmentsVariables>(
     GET_ASSIGNMENTS,
     {
@@ -158,17 +92,10 @@ const EngagementsDisplay = () => {
   );
   const loadData = () => {
     setSkipQuery(false);
-    console.log('calling loadData');
-    // console.log('data in loadData', data);
   }
 
-  // useEffect(loadData, []);
-  // useEffect(() => {
-  //   if (data) {
-  //     setEngagements([...engagements].concat(data.result));
-  //     console.log('data', data);
-  //   }
-  // }, [data]);
+  // Initial load/query
+  useEffect(loadData, []);
 
   const classes = useStyles();
 
@@ -195,7 +122,6 @@ const EngagementsDisplay = () => {
         </Typography>
       </Box>
 
-      {/* TODO: query from backend and display as actual infinite grid list */}
       <Box className={classes.engagementsGridContainer}>
         <InfiniteScroll
           next={loadData}
@@ -204,17 +130,19 @@ const EngagementsDisplay = () => {
           loader={<p>LOADING</p>}
           className={classes.infiniteScroll}
         >
-        <Grid
-          container
-          direction="row"
-          wrap="wrap"
-          xs={8}
-          className={classes.engagementGrid}
-        >
-          {engagements.map(({ title, _id }) => {
-            return <EngagementCard name={title} key={_id} />;
-          })}
-        </Grid>
+          {/* TODO: The grid isnt properly formatted - loader is appearing in a weird position next to all 
+          the other engagements instead of directly below */}
+          <Grid
+            container
+            direction="row"
+            wrap="wrap"
+            xs={8}
+            className={classes.engagementGrid}
+          >
+            {engagements.map(({ title, _id }) => {
+              return <EngagementCard name={title} key={_id} />;
+            })}
+          </Grid>
         </InfiniteScroll>
       </Box>
 
