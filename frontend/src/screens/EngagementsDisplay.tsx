@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import MenuIcon from '@material-ui/icons/Menu';
 import { createStyles, makeStyles, Theme, ThemeProvider } from '@material-ui/core/styles';
 import { AppBar, Toolbar, IconButton, Typography, Box, Grid } from '@material-ui/core';
 import InfiniteScroll from 'react-infinite-scroll-component'
@@ -10,6 +9,7 @@ import EngagementCard from '../components/EngagementCard';
 import appTheme from '../theme/globalTheme';
 
 import { GET_ASSIGNMENTS, GetAssignmentsVariables, GetAssignmentsData, EngagementFields } from '../gql/queries/GetAssignments';
+import Footer from '../components/Footer';
 
 const ENGAGEMENTS_PER_PAGE = 5;
 
@@ -55,35 +55,6 @@ const useStyles = makeStyles((theme: Theme) =>
       flexDirection: 'row',
       justifyContent: 'center',
     },
-    footerContainer: {
-      height: 264,
-      display: 'flex',
-      flexDirection: 'row',
-      marginLeft: '16%',
-      width: '50%',
-    },
-    footerContainerMobile: {
-      height: 255,
-      display: 'flex',
-      flexDirection: 'column',
-      marginLeft: '16%',
-      marginTop: 26,
-    },
-    footerPartition: {
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'flex-start',
-      justifyContent: 'center',
-      marginRight: '5%'
-    },
-    footerPartitionMobile: {
-      marginRight: '5%',
-      marginBottom: 12,
-    },
-    fadedText: {
-      color: 'rgba(0,0,0,0.87)',
-      textAlign: 'left',
-    },
     infiniteScroll: {
       display: 'flex',
       justifyContent: 'center',
@@ -92,13 +63,6 @@ const useStyles = makeStyles((theme: Theme) =>
       display: 'flex',
       justifyContent: 'center',
       width: '100%',
-    },
-    footerLogo: {
-      marginBottom: 0,
-    },
-    footerLogoMobile: {
-      marginBottom: 16,
-      textAlign: 'left',
     },
   }),
 );
@@ -139,17 +103,18 @@ const EngagementsDisplay = () => {
   const classes = useStyles();
 
   return (
-    <ThemeProvider theme={appTheme}>
-      <AppBar color='primary'>
-        <Toolbar>
-          <IconButton edge="start" color="inherit" aria-label="menu">
-            <MenuIcon />
-          </IconButton>
-          <Typography variant="h6" >
-            voltch
-          </Typography>
-        </Toolbar>
-      </AppBar>
+    // <ThemeProvider theme={appTheme}>
+    //   <AppBar color='primary'>
+    //     <Toolbar>
+    //       <IconButton edge="start" color="inherit" aria-label="menu">
+    //         <MenuIcon />
+    //       </IconButton>
+    //       <Typography variant="h6" >
+    //         voltch
+    //       </Typography>
+    //     </Toolbar>
+    //   </AppBar>
+    <div>
       <Box className={isMobile ? classes.startTextContainerMobile : classes.startTextContainer}>
         <Typography variant={isMobile ? 'h4' : 'h3'} className={classes.startTitle}>Volunteer,</Typography>
         <Typography variant={isMobile ? 'h4' : 'h3'} className={classes.startTitle}>one hour at a time</Typography>
@@ -186,20 +151,9 @@ const EngagementsDisplay = () => {
         </InfiniteScroll>
       </Box>
 
-      <Box className={isMobile ? classes.footerContainerMobile : classes.footerContainer}>
-        <Box className={isMobile ? classes.footerPartitionMobile : classes.footerPartition}>
-          <Typography variant='h6' className={isMobile ? classes.footerLogoMobile : classes.footerLogo}>voltch</Typography>
-          <Typography className={classes.fadedText}>In collaboration with</Typography>
-          <Typography className={classes.fadedText}><strong>NUS Disability Support Office</strong></Typography>
-        </Box>
-        <Box className={isMobile ? classes.footerPartitionMobile : classes.footerPartition}>
-          <Typography align='left' className={classes.fadedText}>National University of Singapore</Typography>
-          <Typography align='left' className={classes.fadedText}>Yusof Ishak House, Level 3</Typography>
-          <Typography align='left' className={classes.fadedText}>31 Lower Kent Ridge Road</Typography>
-          <Typography align='left' className={classes.fadedText}>Singapore 119078</Typography>
-        </Box>
-      </Box>
-    </ThemeProvider>
+      <Footer />
+    </div>
+    // </ThemeProvider>
   );
 }
 
