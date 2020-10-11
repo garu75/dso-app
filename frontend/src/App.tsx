@@ -1,20 +1,29 @@
 import React from 'react';
-import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
-
+import { ApolloClient, InMemoryCache, ApolloProvider, createHttpLink } from '@apollo/client';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import logo from './logo.svg';
 import './App.css';
 import EngagementsDisplay from './screens/EngagementsDisplay';
 
+// TODO: extract to env
+const httpLink = createHttpLink({ uri: 'http://localhost:8080/graphql', 
+credentials: 'include'
+ });
 
 const client = new ApolloClient({
-  uri: 'http://localhost:8080/graphql/', // TODO: extract to env
-  cache: new InMemoryCache(),
+  link: httpLink,
+  cache: new InMemoryCache()
 });
 
 function App() {
   return (
     <ApolloProvider client={client}>
       <div className="App">
-        <EngagementsDisplay />
+        <Router>
+          <Switch>
+            <Route path="/" component={EngagementsDisplay} />
+          </Switch>
+        </Router>
       </div>
     </ApolloProvider>
   );

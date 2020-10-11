@@ -3,11 +3,16 @@ import { Document, Model } from "mongoose";
 
 export interface IUser {
   name: string;
+  phone: string;
   email: string;
   password: string;
+  gender: string;
   token: string;
   major: string;
+  year?: number;
   skills: string[];
+  experience: string;
+  timetable: string;
   role: string;
   completedAssignments: Schema.Types.ObjectId[];
   acceptedAssignments: Schema.Types.ObjectId[];

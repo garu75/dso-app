@@ -2,13 +2,19 @@ import React, { useEffect, useState } from 'react';
 import MenuIcon from '@material-ui/icons/Menu';
 import { createStyles, makeStyles, Theme, ThemeProvider } from '@material-ui/core/styles';
 import { AppBar, Toolbar, IconButton, Typography, Box, Grid } from '@material-ui/core';
-import InfiniteScroll from 'react-infinite-scroll-component'
+import InfiniteScroll from 'react-infinite-scroll-component';
+import { Route, Switch } from 'react-router-dom';
 import { useQuery } from '@apollo/client';
+import Cookies from 'js-cookie';
 import { useMediaQuery } from 'react-responsive';
+
+import RegistrationDisplay from './RegistrationDisplay';
+import LoginDisplay from './LoginDisplay';
 
 import EngagementCard from '../components/EngagementCard';
 import appTheme from '../theme/globalTheme';
 
+import { CHECK_AUTH } from '../gql/queries/Authentication';
 import { GET_ASSIGNMENTS, GetAssignmentsVariables, GetAssignmentsData, EngagementFields } from '../gql/queries/GetAssignments';
 
 const ENGAGEMENTS_PER_PAGE = 5;
@@ -103,6 +109,10 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
+const handleCheckAuth = () => {
+  return Cookies.get('signedin');
+}
+
 const EngagementsDisplay = () => {
   // Media queries
   const isMobile = useMediaQuery({ query: '(max-width: 1224px)' });
@@ -116,7 +126,7 @@ const EngagementsDisplay = () => {
     {
       variables: { startId: lastEngagementId, perPage: ENGAGEMENTS_PER_PAGE },
       skip: skipQuery,
-      onCompleted: (data) => {
+      onCompleted: (data: any) => {
         console.log('data loaded', data);
         const lastEngagement = data.result[data.result.length - 1];
         if (!lastEngagement || lastEngagementId === lastEngagement._id) {
@@ -137,6 +147,16 @@ const EngagementsDisplay = () => {
   useEffect(loadData, []);
 
   const classes = useStyles();
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(true);
+
+  useQuery<boolean, null>(
+    CHECK_AUTH,
+    {
+      onCompleted: (data: any) => {
+        console.log(data);
+        setIsLoggedIn(data.checkAuth);
+      }
+    })
 
   return (
     <ThemeProvider theme={appTheme}>
@@ -150,41 +170,48 @@ const EngagementsDisplay = () => {
           </Typography>
         </Toolbar>
       </AppBar>
-      <Box className={isMobile ? classes.startTextContainerMobile : classes.startTextContainer}>
-        <Typography variant={isMobile ? 'h4' : 'h3'} className={classes.startTitle}>Volunteer,</Typography>
-        <Typography variant={isMobile ? 'h4' : 'h3'} className={classes.startTitle}>one hour at a time</Typography>
-        <Typography className={isMobile ? classes.startSubtextMobile : classes.startSubtext}>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-          Nam in faucibus justo. Sed placerat justo eu turpis posuere ultricies.
-          Curabitur at arcu ac mauris laoreet fermentum at ut leo.
-          Curabitur blandit sapien quis eros rutrum vehicula.
+      <Switch>
+        <Route exact path='/'>
+          <Box className={isMobile ? classes.startTextContainerMobile : classes.startTextContainer}>
+            <Typography variant={isMobile ? 'h4' : 'h3'} className={classes.startTitle}>Volunteer,</Typography>
+            <Typography variant={isMobile ? 'h4' : 'h3'} className={classes.startTitle}>one hour at a time</Typography>
+            <Typography className={isMobile ? classes.startSubtextMobile : classes.startSubtext}>
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+              Nam in faucibus justo. Sed placerat justo eu turpis posuere ultricies.
+              Curabitur at arcu ac mauris laoreet fermentum at ut leo.
+              Curabitur blandit sapien quis eros rutrum vehicula.
         </Typography>
-      </Box>
+          </Box>
 
-      <Box className={classes.engagementsGridContainer}>
-        <InfiniteScroll
-          next={loadData}
-          dataLength={engagements.length}
-          hasMore={isLoadExisting}
-          loader={<div />}
-          className={classes.infiniteScroll}
-        >
-          {/* TODO: The grid isnt properly formatted - loader is appearing in a weird position next to all 
+          <Box className={classes.engagementsGridContainer}>
+            <InfiniteScroll
+              next={loadData}
+              dataLength={engagements.length}
+              hasMore={isLoadExisting}
+              loader={<div />}
+              className={classes.infiniteScroll}
+            >
+              {/* TODO: The grid isnt properly formatted - loader is appearing in a weird position next to all 
           the other engagements instead of directly below */}
-          {/* Triston: I have temporarily changed the loader into an empty div */}
-          <Grid
-            container
-            direction="row"
-            wrap="wrap"
-            xs={isMobile ? 12 : 8}
-            className={classes.engagementGrid}
-          >
-            {engagements.map(({ title, _id }) => {
-              return <EngagementCard name={title} key={_id} />;
-            })}
-          </Grid>
-        </InfiniteScroll>
-      </Box>
+              {/* Triston: I have temporarily changed the loader into an empty div */}
+              <Grid
+                container
+                direction="row"
+                wrap="wrap"
+                xs={isMobile ? 12 : 8}
+                className={classes.engagementGrid}
+              >
+                {engagements.map(({ title, _id }) => {
+                  return <EngagementCard name={title} key={_id} />;
+                })}
+              </Grid>
+            </InfiniteScroll>
+          </Box>
+
+        </Route>
+        <Route path="/register" component={RegistrationDisplay} />
+        <Route path="/login" component={LoginDisplay} />
+      </Switch>
 
       <Box className={isMobile ? classes.footerContainerMobile : classes.footerContainer}>
         <Box className={isMobile ? classes.footerPartitionMobile : classes.footerPartition}>
@@ -203,4 +230,4 @@ const EngagementsDisplay = () => {
   );
 }
 
-export default EngagementsDisplay
+export default EngagementsDisplay;
