@@ -1,16 +1,20 @@
 import React from 'react';
-import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
 import MenuIcon from '@material-ui/icons/Menu';
 import { AppBar, IconButton, ThemeProvider, Toolbar, Typography } from '@material-ui/core';
-
+import { ApolloClient, InMemoryCache, ApolloProvider, createHttpLink } from '@apollo/client';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import './App.css';
-import EngagementsDisplay from './screens/EngagementsDisplay';
-import EngagementDetail from './screens/EngagementDetail';
+import HomeDisplay from './screens/HomeDisplay';
 import appTheme from './theme/globalTheme';
 
+// TODO: extract to env
+const httpLink = createHttpLink({ uri: 'http://localhost:8080/graphql', 
+credentials: 'include'
+ });
+
 const client = new ApolloClient({
-  uri: 'http://localhost:8080/graphql/', // TODO: extract to env
-  cache: new InMemoryCache(),
+  link: httpLink,
+  cache: new InMemoryCache()
 });
 
 function App() {
@@ -28,8 +32,11 @@ function App() {
           </Toolbar>
         </AppBar>
         <div className="App">
-          {/* <EngagementsDisplay /> */}
-          <EngagementDetail />
+        <Router>
+          <Switch>
+            <Route path="/" component={HomeDisplay} />
+          </Switch>
+        </Router>
         </div>
         </ThemeProvider>
     </ApolloProvider>

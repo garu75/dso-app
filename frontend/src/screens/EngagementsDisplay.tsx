@@ -1,14 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { createStyles, makeStyles, Theme, ThemeProvider } from '@material-ui/core/styles';
-import { AppBar, Toolbar, IconButton, Typography, Box, Grid } from '@material-ui/core';
-import InfiniteScroll from 'react-infinite-scroll-component'
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import { Typography, Box, Grid } from '@material-ui/core';
+import InfiniteScroll from 'react-infinite-scroll-component';
 import { useQuery } from '@apollo/client';
 import { useMediaQuery } from 'react-responsive';
 
 import EngagementCard from '../components/EngagementCard';
-import appTheme from '../theme/globalTheme';
 
-import { GET_ASSIGNMENTS, GetAssignmentsVariables, GetAssignmentsData, EngagementFields } from '../gql/queries/GetAssignments';
+import {
+  GET_ASSIGNMENTS,
+  GetAssignmentsVariables,
+  GetAssignmentsData,
+  EngagementFields
+} from '../gql/queries/GetAssignments';
 import Footer from '../components/Footer';
 
 const ENGAGEMENTS_PER_PAGE = 5;
@@ -80,7 +84,7 @@ const EngagementsDisplay = () => {
     {
       variables: { startId: lastEngagementId, perPage: ENGAGEMENTS_PER_PAGE },
       skip: skipQuery,
-      onCompleted: (data) => {
+      onCompleted: (data: any) => {
         console.log('data loaded', data);
         const lastEngagement = data.result[data.result.length - 1];
         if (!lastEngagement || lastEngagementId === lastEngagement._id) {
@@ -103,17 +107,6 @@ const EngagementsDisplay = () => {
   const classes = useStyles();
 
   return (
-    // <ThemeProvider theme={appTheme}>
-    //   <AppBar color='primary'>
-    //     <Toolbar>
-    //       <IconButton edge="start" color="inherit" aria-label="menu">
-    //         <MenuIcon />
-    //       </IconButton>
-    //       <Typography variant="h6" >
-    //         voltch
-    //       </Typography>
-    //     </Toolbar>
-    //   </AppBar>
     <div>
       <Box className={isMobile ? classes.startTextContainerMobile : classes.startTextContainer}>
         <Typography variant={isMobile ? 'h4' : 'h3'} className={classes.startTitle}>Volunteer,</Typography>
@@ -150,11 +143,9 @@ const EngagementsDisplay = () => {
           </Grid>
         </InfiniteScroll>
       </Box>
-
       <Footer />
     </div>
-    // </ThemeProvider>
   );
 }
 
-export default EngagementsDisplay
+export default EngagementsDisplay;

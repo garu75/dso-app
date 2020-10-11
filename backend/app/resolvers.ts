@@ -56,26 +56,8 @@ const resolvers = {
         return new Error(err);
       }
     },
-    register: async (root: any, args: { user: IUser }, context: any) => {
-      const { name, email, password, skills, role, major } = args.user;
-      //hashing password
-      const salt = await bcrypt.genSalt(saltRounds);
-      const hashedPassword = await bcrypt.hash(password, salt);
-      const user = {
-        name,
-        email,
-        password: hashedPassword,
-        token: '',
-        major,
-        skills,
-        role,
-        completedAssignments: [],
-        acceptedAssignments: [],
-        savedAssignments: []
-      };
-
-      // Save to mongodb
-      return UserModel.create(user);
+    checkAuth: (root: any, args: {}, context: any) => {
+      return context.user !== null;
     },
     getMyInfo: (root: any, args: {}, context: any) => {
       const { user } = context;
@@ -121,6 +103,26 @@ const resolvers = {
     },
   },
   Mutation: {
+    register: async (root: any, args: { user: IUser }, context: any) => {
+      console.log(args);
+      const { name, email, phone, password, skills, role, major,
+        gender, year, experience, timetable } = args.user;
+      //hashing password
+      const salt = await bcrypt.genSalt(saltRounds);
+      const hashedPassword = await bcrypt.hash(password, salt);
+      const user = {
+        name, phone, email, skills, role, major, gender,
+        year, experience, timetable,
+        password: hashedPassword,
+        token: '',
+        completedAssignments: [],
+        acceptedAssignments: [],
+        savedAssignments: []
+      };
+
+      // Save to mongodb
+      return UserModel.create(user);
+    },
     /** Assignment APIs */
     createAssignment: (root: any, args: { assignment: IAssignment }, context: any) => {
       const { user } = context;

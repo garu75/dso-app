@@ -8,6 +8,7 @@ const ObjectId = Schema.Types.ObjectId;
 const UserSchema = new Schema({
   email: { type: String, trim: true, unique: true },
   name: { type: String, max: 50 },
+  phone: { type: String },
   password: { type: String, min: 5, required: true },
   completedAssignments: { 
     type: [{type: ObjectId, ref: 'assignment' }],
@@ -19,12 +20,12 @@ const UserSchema = new Schema({
   savedAssignments: { 
     type: [{type: ObjectId, ref: 'assignment' }],
   },
-  token: {
-    type: String,
-  },
-  major: {
-    type: String
-  },
+  token: { type: String },
+  major: { type: String },
+  gender: { type: String },
+  year: { type: Number },
+  experience: { type: String },
+  timetable: { type: String },
   skills: { type: [String] },
   role: {
     type: String,

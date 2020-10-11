@@ -1,5 +1,7 @@
 import express from 'express';
 import { ApolloServer, gql } from 'apollo-server-express';
+import cookieParser from 'cookie-parser';
+import cors from 'cors';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import typeDefs from './schema';
@@ -12,24 +14,35 @@ dotenv.config();
 
 // Create a new express application instance
 const app: express.Application = express();
+
+var corsOptions = {
+  origin: 'http://localhost:3000',
+  allowedHeaders: 'Origin, X-Requested-With, Content-Type, Accept',
+  credentials: true // <-- REQUIRED backend setting
+};
+app.use(cors(corsOptions));
+app.use(cookieParser());
+
 const server = new ApolloServer({ 
   typeDefs, 
   resolvers,
   context: async ({ req, res }) => {
-    const cookies = req.headers.cookie?.split('=');
-
-    const token = cookies ? 
-      cookies[cookies.findIndex(val => val === 'authToken') + 1] 
-      : '';
+    const token = (req.cookies ? req.cookies['authToken'] : '')|| '';
+    console.log('token' + token);
     try {
       const user = await UserModel.findByToken(token);
       return { user, res };
     } catch(err) {
-      return { user: null, res};
+      return { user: null, res };
     }
+  },
+  formatError: (err) => {
+    console.log(err)
+    return err;
   }
 });
-server.applyMiddleware({ app });
+server.applyMiddleware({ app, cors: false });
+
 
 //Connect MongoDB
 const connect = mongoose
