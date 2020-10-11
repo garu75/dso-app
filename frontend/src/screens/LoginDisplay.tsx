@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { createStyles, makeStyles, withStyles, Theme, ThemeProvider } from '@material-ui/core/styles';
+import React, { useState } from 'react';
+import { createStyles, makeStyles, withStyles, Theme } from '@material-ui/core/styles';
 import {
   IconButton,
   Typography,
@@ -12,15 +12,10 @@ import {
   InputLabel,
   Button,
 } from '@material-ui/core';
-import {
-  AccountCircle, Visibility, VisibilityOff,
-  Lock, Email, Phone, Home, School
-} from '@material-ui/icons';
+import { Visibility, VisibilityOff, Lock, Email } from '@material-ui/icons';
 import { useLazyQuery } from '@apollo/client';
 
 import TextFormField, { TextFormInput } from '../components/TextFormField';
-import appTheme from '../theme/globalTheme';
-import { SvgImageList } from './SvgImageList';
 import { LOGIN, LoginInput, GetUserData } from '../gql/queries/Authentication';
 
 const ColorButton = withStyles((theme: Theme) => ({

@@ -1,21 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import MenuIcon from '@material-ui/icons/Menu';
-import { createStyles, makeStyles, Theme, ThemeProvider } from '@material-ui/core/styles';
-import { AppBar, Toolbar, IconButton, Typography, Box, Grid } from '@material-ui/core';
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import { Typography, Box, Grid } from '@material-ui/core';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import { Route, Switch } from 'react-router-dom';
 import { useQuery } from '@apollo/client';
-import Cookies from 'js-cookie';
 import { useMediaQuery } from 'react-responsive';
 
-import RegistrationDisplay from './RegistrationDisplay';
-import LoginDisplay from './LoginDisplay';
-
 import EngagementCard from '../components/EngagementCard';
-import appTheme from '../theme/globalTheme';
 
-import { CHECK_AUTH } from '../gql/queries/Authentication';
-import { GET_ASSIGNMENTS, GetAssignmentsVariables, GetAssignmentsData, EngagementFields } from '../gql/queries/GetAssignments';
+import {
+  GET_ASSIGNMENTS,
+  GetAssignmentsVariables,
+  GetAssignmentsData,
+  EngagementFields
+} from '../gql/queries/GetAssignments';
+import Footer from '../components/Footer';
 
 const ENGAGEMENTS_PER_PAGE = 5;
 
@@ -61,35 +59,6 @@ const useStyles = makeStyles((theme: Theme) =>
       flexDirection: 'row',
       justifyContent: 'center',
     },
-    footerContainer: {
-      height: 264,
-      display: 'flex',
-      flexDirection: 'row',
-      marginLeft: '16%',
-      width: '50%',
-    },
-    footerContainerMobile: {
-      height: 255,
-      display: 'flex',
-      flexDirection: 'column',
-      marginLeft: '16%',
-      marginTop: 26,
-    },
-    footerPartition: {
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'flex-start',
-      justifyContent: 'center',
-      marginRight: '5%'
-    },
-    footerPartitionMobile: {
-      marginRight: '5%',
-      marginBottom: 12,
-    },
-    fadedText: {
-      color: 'rgba(0,0,0,0.87)',
-      textAlign: 'left',
-    },
     infiniteScroll: {
       display: 'flex',
       justifyContent: 'center',
@@ -99,19 +68,8 @@ const useStyles = makeStyles((theme: Theme) =>
       justifyContent: 'center',
       width: '100%',
     },
-    footerLogo: {
-      marginBottom: 0,
-    },
-    footerLogoMobile: {
-      marginBottom: 16,
-      textAlign: 'left',
-    },
   }),
 );
-
-const handleCheckAuth = () => {
-  return Cookies.get('signedin');
-}
 
 const EngagementsDisplay = () => {
   // Media queries
@@ -147,86 +105,46 @@ const EngagementsDisplay = () => {
   useEffect(loadData, []);
 
   const classes = useStyles();
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(true);
-
-  useQuery<boolean, null>(
-    CHECK_AUTH,
-    {
-      onCompleted: (data: any) => {
-        console.log(data);
-        setIsLoggedIn(data.checkAuth);
-      }
-    })
 
   return (
-    <ThemeProvider theme={appTheme}>
-      <AppBar color='primary'>
-        <Toolbar>
-          <IconButton edge="start" color="inherit" aria-label="menu">
-            <MenuIcon />
-          </IconButton>
-          <Typography variant="h6" >
-            voltch
-          </Typography>
-        </Toolbar>
-      </AppBar>
-      <Switch>
-        <Route exact path='/'>
-          <Box className={isMobile ? classes.startTextContainerMobile : classes.startTextContainer}>
-            <Typography variant={isMobile ? 'h4' : 'h3'} className={classes.startTitle}>Volunteer,</Typography>
-            <Typography variant={isMobile ? 'h4' : 'h3'} className={classes.startTitle}>one hour at a time</Typography>
-            <Typography className={isMobile ? classes.startSubtextMobile : classes.startSubtext}>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-              Nam in faucibus justo. Sed placerat justo eu turpis posuere ultricies.
-              Curabitur at arcu ac mauris laoreet fermentum at ut leo.
-              Curabitur blandit sapien quis eros rutrum vehicula.
+    <div>
+      <Box className={isMobile ? classes.startTextContainerMobile : classes.startTextContainer}>
+        <Typography variant={isMobile ? 'h4' : 'h3'} className={classes.startTitle}>Volunteer,</Typography>
+        <Typography variant={isMobile ? 'h4' : 'h3'} className={classes.startTitle}>one hour at a time</Typography>
+        <Typography className={isMobile ? classes.startSubtextMobile : classes.startSubtext}>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+          Nam in faucibus justo. Sed placerat justo eu turpis posuere ultricies.
+          Curabitur at arcu ac mauris laoreet fermentum at ut leo.
+          Curabitur blandit sapien quis eros rutrum vehicula.
         </Typography>
-          </Box>
-
-          <Box className={classes.engagementsGridContainer}>
-            <InfiniteScroll
-              next={loadData}
-              dataLength={engagements.length}
-              hasMore={isLoadExisting}
-              loader={<div />}
-              className={classes.infiniteScroll}
-            >
-              {/* TODO: The grid isnt properly formatted - loader is appearing in a weird position next to all 
-          the other engagements instead of directly below */}
-              {/* Triston: I have temporarily changed the loader into an empty div */}
-              <Grid
-                container
-                direction="row"
-                wrap="wrap"
-                xs={isMobile ? 12 : 8}
-                className={classes.engagementGrid}
-              >
-                {engagements.map(({ title, _id }) => {
-                  return <EngagementCard name={title} key={_id} />;
-                })}
-              </Grid>
-            </InfiniteScroll>
-          </Box>
-
-        </Route>
-        <Route path="/register" component={RegistrationDisplay} />
-        <Route path="/login" component={LoginDisplay} />
-      </Switch>
-
-      <Box className={isMobile ? classes.footerContainerMobile : classes.footerContainer}>
-        <Box className={isMobile ? classes.footerPartitionMobile : classes.footerPartition}>
-          <Typography variant='h6' className={isMobile ? classes.footerLogoMobile : classes.footerLogo}>voltch</Typography>
-          <Typography className={classes.fadedText}>In collaboration with</Typography>
-          <Typography className={classes.fadedText}><strong>NUS Disability Support Office</strong></Typography>
-        </Box>
-        <Box className={isMobile ? classes.footerPartitionMobile : classes.footerPartition}>
-          <Typography align='left' className={classes.fadedText}>National University of Singapore</Typography>
-          <Typography align='left' className={classes.fadedText}>Yusof Ishak House, Level 3</Typography>
-          <Typography align='left' className={classes.fadedText}>31 Lower Kent Ridge Road</Typography>
-          <Typography align='left' className={classes.fadedText}>Singapore 119078</Typography>
-        </Box>
       </Box>
-    </ThemeProvider>
+
+      <Box className={classes.engagementsGridContainer}>
+        <InfiniteScroll
+          next={loadData}
+          dataLength={engagements.length}
+          hasMore={isLoadExisting}
+          loader={<div />}
+          className={classes.infiniteScroll}
+        >
+          {/* TODO: The grid isnt properly formatted - loader is appearing in a weird position next to all 
+          the other engagements instead of directly below */}
+          {/* Triston: I have temporarily changed the loader into an empty div */}
+          <Grid
+            container
+            direction="row"
+            wrap="wrap"
+            xs={isMobile ? 12 : 8}
+            className={classes.engagementGrid}
+          >
+            {engagements.map(({ title, _id }) => {
+              return <EngagementCard name={title} key={_id} />;
+            })}
+          </Grid>
+        </InfiniteScroll>
+      </Box>
+      <Footer />
+    </div>
   );
 }
 

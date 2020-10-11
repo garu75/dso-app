@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { createStyles, makeStyles, withStyles, Theme, ThemeProvider } from '@material-ui/core/styles';
+import React, { useState } from 'react';
+import { createStyles, makeStyles, withStyles, Theme } from '@material-ui/core/styles';
 import {
   IconButton,
   Typography,
@@ -21,10 +21,9 @@ import {
   AccountCircle, Visibility, VisibilityOff,
   Lock, Email, Phone, Home, School
 } from '@material-ui/icons';
-import { useMutation, useQuery } from '@apollo/client';
+import { useMutation } from '@apollo/client';
 
 import TextFormField, { TextFormInput } from '../components/TextFormField';
-import appTheme from '../theme/globalTheme';
 import { SvgImageList } from './SvgImageList';
 import { REGISTER, UserInput, GetUserData } from '../gql/queries/Authentication';
 
