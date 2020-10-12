@@ -94,6 +94,9 @@ const EngagementsDisplay = () => {
           setEngagements([...engagements].concat(data.result));
         }
         setSkipQuery(true);
+      },
+      onError: (err: any) => {
+        console.log(err);
       }
     },
   );
@@ -143,7 +146,6 @@ const EngagementsDisplay = () => {
           </Grid>
         </InfiniteScroll>
       </Box>
-      <Footer />
     </div>
   );
 }

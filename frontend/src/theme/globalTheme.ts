@@ -20,6 +20,7 @@ const appTheme = createMuiTheme({
 
 export const appColors = {
   coral: '#ff6b6c',
+  mediumRed: '#EF7471',
   blueGray: '#5b5f97',
   turquoise: '#12cdd0',
   yellow: '#ffc145',

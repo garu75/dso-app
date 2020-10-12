@@ -104,7 +104,6 @@ const resolvers = {
   },
   Mutation: {
     register: async (root: any, args: { user: IUser }, context: any) => {
-      console.log(args);
       const { name, email, phone, password, skills, role, major,
         gender, year, experience, timetable } = args.user;
       //hashing password
@@ -113,6 +112,7 @@ const resolvers = {
       const user = {
         name, phone, email, skills, role, major, gender,
         year, experience, timetable,
+        profileImage: "",
         password: hashedPassword,
         token: '',
         completedAssignments: [],
@@ -122,6 +122,18 @@ const resolvers = {
 
       // Save to mongodb
       return UserModel.create(user);
+    },
+    uploadProfileImage: async (root: any, args: { profileImage: string }, context: any) => {
+      const { user } = context;
+      const update = {
+        $set: {
+          profileImage: args.profileImage
+        }
+      }
+      if (user) {
+      // Save to mongodb
+      return UserModel.findOneAndUpdate({ _id: user._id}, update, { new: true });
+      }
     },
     /** Assignment APIs */
     createAssignment: (root: any, args: { assignment: IAssignment }, context: any) => {

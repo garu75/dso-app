@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { json } from 'express';
 import { ApolloServer, gql } from 'apollo-server-express';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
@@ -18,17 +18,17 @@ const app: express.Application = express();
 var corsOptions = {
   origin: 'http://localhost:3000',
   allowedHeaders: 'Origin, X-Requested-With, Content-Type, Accept',
-  credentials: true // <-- REQUIRED backend setting
+  credentials: true
 };
 app.use(cors(corsOptions));
 app.use(cookieParser());
+app.use(json({ limit: '2mb' }));
 
 const server = new ApolloServer({ 
   typeDefs, 
   resolvers,
   context: async ({ req, res }) => {
     const token = (req.cookies ? req.cookies['authToken'] : '')|| '';
-    console.log('token' + token);
     try {
       const user = await UserModel.findByToken(token);
       return { user, res };

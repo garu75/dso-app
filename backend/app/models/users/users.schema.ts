@@ -20,6 +20,7 @@ const UserSchema = new Schema({
   savedAssignments: { 
     type: [{type: ObjectId, ref: 'assignment' }],
   },
+  profileImage: { type: String },
   token: { type: String },
   major: { type: String },
   gender: { type: String },

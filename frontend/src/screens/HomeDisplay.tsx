@@ -6,9 +6,11 @@ import { Route, Switch } from 'react-router-dom';
 import { useQuery } from '@apollo/client';
 
 import EngagementsDisplay from './EngagementsDisplay';
+import EngagementDetail from './EngagementDetail';
 import RegistrationDisplay from './RegistrationDisplay';
+import UserProfileDisplay from './UserProfileDisplay';
 import LoginDisplay from './LoginDisplay';
-import appTheme from '../theme/globalTheme';
+import appTheme, { appColors } from '../theme/globalTheme';
 
 import { CHECK_AUTH } from '../gql/queries/Authentication';
 import Footer from '../components/Footer';
@@ -22,24 +24,27 @@ const HomeDisplay = () => {
       onCompleted: (data: any) => {
         setIsLoggedIn(data.checkAuth);
       }
-    })
+    }
+  );
 
   return (
     <ThemeProvider theme={appTheme}>
       <AppBar color='primary'>
         <Toolbar>
           <IconButton edge="start" color="inherit" aria-label="menu">
-            <MenuIcon />
+            <MenuIcon style={{ color: appColors.mediumRed }} />
           </IconButton>
-          <Typography variant="h6" >
+          <Typography variant="h6" style={{ color: appColors.mediumRed }}>
             voltch
           </Typography>
         </Toolbar>
       </AppBar>
       <Switch>
+        {!isLoggedIn && <Route path="/register" component={RegistrationDisplay} />}
+        {!isLoggedIn && <Route path="/login" component={LoginDisplay} />}
+        {isLoggedIn && <Route path='/profile' component={UserProfileDisplay} />}
         <Route exact path='/' component={EngagementsDisplay} />
-        {isLoggedIn && <Route path="/register" component={RegistrationDisplay} /> }
-        {isLoggedIn && <Route path="/login" component={LoginDisplay} /> }
+        <Route path='/:id/details' component={EngagementDetail} />
       </Switch>
 
       <Footer />

@@ -14,6 +14,7 @@ const typeDefs = gql`
   }
   type Mutation {
     register(user: UserInput!): User
+    uploadProfileImage(profileImage: String!): User
     createAssignment(assignment: AssignmentInput!): Assignment
     updateAssignment(assignment: AssignmentInput!): Assignment
     deleteAssignment(_id: ID): Boolean
@@ -38,8 +39,14 @@ const typeDefs = gql`
     name: String
     phone: String
     email: String
+    profileImage: String
+    gender: String
     skills: [String]
     role: String
+    major: String
+    year: Int
+    experience: String
+    timetable: String
     completedAssignments: [Assignment]
     acceptedAssignments: [Assignment]
     savedAssignments: [Assignment]
