@@ -4,13 +4,13 @@ import { Schema } from 'mongoose';
 import bcrypt from 'bcrypt';
 import Constants from '../../common/Constants';
 import { UserModel } from './models/users/users.model';
-import { IAssignment, IAssignmentDocument } from './models/assignments/assignments.types';
-import { AssignmentModel } from './models/assignments/assignments.model';
+import { IEngagement, IEngagementDocument } from './models/engagements/engagements.types';
+import { EngagementModel } from './models/engagements/engagements.model';
 import { IUser } from './models/users/users.types';
 
 const saltRounds = 10;
 
-const userPopulateFields = ['acceptedAssignments', 'completedAssignments', 'savedAssignments'];
+const userPopulateFields = ['acceptedEngagements', 'completedEngagements', 'savedEngagements'];
 
 const resolvers = {
   Date: new GraphQLScalarType({
@@ -31,6 +31,53 @@ const resolvers = {
   }),
   Query: {
     /** User APIs */
+    checkAuth: (root: any, args: {}, context: any) => {
+      return context.user !== null;
+    },
+    getMyInfo: (root: any, args: {}, context: any) => {
+      const { user } = context;
+      if (!user) {
+        return new Error("Not Logged In");
+      }
+      return UserModel.findOne({ _id: user._id })
+        .populate(userPopulateFields)
+        .catch(err => { return new Error(err) });
+    },
+    /** Engagement APIs */
+    getEngagement: (root: any, args: { _id: Schema.Types.ObjectId }, context: any) => {
+      return EngagementModel.findOne({ _id: args._id })
+        .catch(err => { return new Error(err) });
+    },
+    getAllEngagements: (root: any, args: {}, context: any) => {
+      return EngagementModel.find()
+        .catch(err => { return new Error(err) });
+    },
+    getEngagements: (
+      root: any,
+      { startId, perPage }: { startId: Schema.Types.ObjectId, perPage: number },
+      context: any,
+    ) => {
+      if (!startId) {
+        return EngagementModel.find()
+          .sort({ _id: -1 })
+          .limit(perPage);
+      }
+      return EngagementModel.find({ _id: { $lt: startId } })
+        .sort({ _id: -1 })
+        .limit(perPage);
+    },
+
+    searchEngagements: (root: any, args: { searchString: string }, context: any) => {
+      const encapsulatedString = "\"" + args.searchString + "\"";
+      return EngagementModel.find({
+        $text: {
+          $search: encapsulatedString
+        }
+      })
+        .catch(err => { return new Error(err) });
+    },
+  },
+  Mutation: {
     login: async (root: any, args: { email: string, password: string }, context: any) => {
       const { email, password } = args;
       //check if email exist
@@ -51,60 +98,22 @@ const resolvers = {
             expires: new Date(Date.now() + 32 * 3600000), // cookie will be removed after 32 hours
             httpOnly: true,
           });
-        return { name: generatedUser.name, email: generatedUser.email };
+        return generatedUser;
       } catch (err) {
         return new Error(err);
       }
     },
-    checkAuth: (root: any, args: {}, context: any) => {
-      return context.user !== null;
-    },
-    getMyInfo: (root: any, args: {}, context: any) => {
-      const { user } = context;
-      if (!user) {
-        return new Error("Not Logged In");
+    logout: async (root: any, args: {}, context: any) => {
+      const user = context.user;
+      user.token = "";
+      try {
+        await UserModel.findOneAndUpdate({ _id: user._id }, user, {}).exec();
+        return true;
+      } catch (err) {
+        return new Error(err);
       }
-      return UserModel.findOne({ _id: user._id })
-        .populate(userPopulateFields)
-        .catch(err => { return new Error(err) });
     },
-    /** Assignment APIs */
-    getAssignment: (root: any, args: { _id: Schema.Types.ObjectId }, context: any) => {
-      return AssignmentModel.findOne({ _id: args._id })
-        .catch(err => { return new Error(err) });
-    },
-    getAllAssignments: (root: any, args: {}, context: any) => {
-      return AssignmentModel.find()
-        .catch(err => { return new Error(err) });
-    },
-    getAssignments: (
-      root: any,
-      { startId, perPage }: { startId: Schema.Types.ObjectId, perPage: number },
-      context: any,
-    ) => {
-      if (!startId) {
-        return AssignmentModel.find()
-          .sort({ _id: -1 })
-          .limit(perPage);
-      }
-      return AssignmentModel.find({ _id: { $lt: startId } })
-        .sort({ _id: -1 })
-        .limit(perPage);
-    },
-
-    searchAssignments: (root: any, args: { searchString: string }, context: any) => {
-      const encapsulatedString = "\"" + args.searchString + "\"";
-      return AssignmentModel.find({
-        $text: {
-          $search: encapsulatedString
-        }
-      })
-        .catch(err => { return new Error(err) });
-    },
-  },
-  Mutation: {
     register: async (root: any, args: { user: IUser }, context: any) => {
-      console.log(args);
       const { name, email, phone, password, skills, role, major,
         gender, year, experience, timetable } = args.user;
       //hashing password
@@ -113,85 +122,98 @@ const resolvers = {
       const user = {
         name, phone, email, skills, role, major, gender,
         year, experience, timetable,
+        profileImage: "",
         password: hashedPassword,
         token: '',
-        completedAssignments: [],
-        acceptedAssignments: [],
-        savedAssignments: []
+        completedEngagements: [],
+        acceptedEngagements: [],
+        savedEngagements: []
       };
 
       // Save to mongodb
       return UserModel.create(user);
     },
-    /** Assignment APIs */
-    createAssignment: (root: any, args: { assignment: IAssignment }, context: any) => {
+    uploadProfileImage: async (root: any, args: { profileImage: string }, context: any) => {
+      const { user } = context;
+      const update = {
+        $set: {
+          profileImage: args.profileImage
+        }
+      }
+      if (user) {
+      // Save to mongodb
+      return UserModel.findOneAndUpdate({ _id: user._id}, update, { new: true });
+      }
+    },
+    /** Engagement APIs */
+    createEngagement: (root: any, args: { engagement: IEngagement }, context: any) => {
       const { user } = context;
       if (!user) {
         return new Error("Not Logged In");
       }
-      const { assignment } = args;
-      assignment.creator = user._id;
-      assignment.status = Constants.STATUS_UNASSIGNED;
-      return AssignmentModel.create(assignment)
+      const { engagement } = args;
+      engagement.creator = user._id;
+      engagement.status = Constants.STATUS_UNASSIGNED;
+      return EngagementModel.create(engagement)
         .catch(err => { return new Error(err) });
     },
-    updateAssignment: (root: any, args: { assignment: IAssignmentDocument }, context: any) => {
-      const { assignment } = args;
-      return AssignmentModel.findOneAndUpdate({ _id: assignment._id }, assignment, { new: true })
+    updateEngagement: (root: any, args: { engagement: IEngagementDocument }, context: any) => {
+      const { engagement } = args;
+      return EngagementModel.findOneAndUpdate({ _id: engagement._id }, engagement, { new: true })
         .catch(err => { return new Error(err) });
     },
-    deleteAssignment: (root: any, args: { _id: Schema.Types.ObjectId }, context: any) => {
+    deleteEngagement: (root: any, args: { _id: Schema.Types.ObjectId }, context: any) => {
       const _id = args._id;
-      return AssignmentModel.deleteOne({ _id }, {}).then(res => { return res.deletedCount === 1 })
+      return EngagementModel.deleteOne({ _id }, {}).then(res => { return res.deletedCount === 1 })
         .catch(err => { return new Error(err) });
     },
-    /** User Assignment APIs */
-    acceptAssignment: async (root: any, args: { assignmentId: Schema.Types.ObjectId }, context: any) => {
+    /** User Engagement APIs */
+    acceptEngagement: async (root: any, args: { engagementId: Schema.Types.ObjectId }, context: any) => {
       const { user } = context;
       if (!user) {
         return new Error("Not Logged In");
       }
-      const assignment = await AssignmentModel.findOneAndUpdate({
-        _id: args.assignmentId,
+      const engagement = await EngagementModel.findOneAndUpdate({
+        _id: args.engagementId,
         status: Constants.STATUS_UNASSIGNED
       }, {
         $set: {
           status: Constants.STATUS_ACCEPTED
         }
       }).exec();
-      if (assignment) {
+      if (engagement) {
         return UserModel
-          .findOneAndUpdate({ _id: user._id }, { $addToSet: { acceptedAssignments: args.assignmentId } },
+          .findOneAndUpdate({ _id: user._id }, { $addToSet: { acceptedEngagements: args.engagementId } },
             { new: true })
           .populate(userPopulateFields);
       } else {
-        return new Error("Assignment not available");
+        return new Error("Engagement not available");
       }
     },
-    completeAssignment: async (root: any, args: { assignmentId: Schema.Types.ObjectId }, context: any) => {
+    completeEngagement: async (root: any, args: { engagementId: Schema.Types.ObjectId }, context: any) => {
       const { user } = context;
-      const assignmentId = args.assignmentId;
+      const engagementId = args.engagementId;
       if (!user) {
         return new Error("Not Logged In");
       }
-      const assignment =
-        await AssignmentModel.findOne({ _id: assignmentId, status: Constants.STATUS_ACCEPTED }).exec();
+      const engagement =
+        await EngagementModel.findOne({ _id: engagementId, status: Constants.STATUS_ACCEPTED }).exec();
 
-      if (assignment) {
+      if (engagement) {
         return UserModel.findOneAndUpdate({
           _id: user._id,
-          acceptedAssignments: assignmentId
+          acceptedEngagements: engagementId
         }, {
           $addToSet: {
-            completedAssignments: assignmentId
+            completedEngagements: engagementId
           },
           $pull: {
-            acceptedAssignments: assignmentId
+            acceptedEngagements: engagementId
           }
         }, { new: true }).populate(userPopulateFields)
           .then(async updatedUser => {
             if (updatedUser) {
-              await AssignmentModel.findOneAndUpdate({ _id: assignmentId }, {
+              await EngagementModel.findOneAndUpdate({ _id: engagementId }, {
                 $set: {
                   status: Constants.STATUS_COMPLETED
                 }
@@ -200,25 +222,25 @@ const resolvers = {
             return updatedUser;
           });
       } else {
-        return new Error("Assignment not currently accepted");
+        return new Error("Engagement not currently accepted");
       }
     },
-    saveAssignment: async (root: any, args: { assignmentId: Schema.Types.ObjectId }, context: any) => {
+    saveEngagement: async (root: any, args: { engagementId: Schema.Types.ObjectId }, context: any) => {
       const { user } = context;
       if (!user) {
         return new Error("Not Logged In");
       }
-      const assignment = await AssignmentModel.findOne({
-        _id: args.assignmentId,
+      const engagement = await EngagementModel.findOne({
+        _id: args.engagementId,
         status: Constants.STATUS_UNASSIGNED
       }).exec();
-      if (assignment) {
+      if (engagement) {
         return UserModel
-          .findOneAndUpdate({ _id: user._id }, { $addToSet: { savedAssignments: args.assignmentId } },
+          .findOneAndUpdate({ _id: user._id }, { $addToSet: { savedEngagements: args.engagementId } },
             { new: true })
           .populate(userPopulateFields);
       } else {
-        return new Error("Assignment not available");
+        return new Error("Engagement not available");
       }
     },
   }

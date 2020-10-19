@@ -21,7 +21,7 @@ const Constants = {
   MAJOR_BUSINESS: 'business',
   MAJOR_ARTS: 'arts',
 
-  // Assignment Status
+  // Engagement Status
   STATUS_UNASSIGNED: 'unassigned',
   STATUS_ACCEPTED: 'accepted',
   STATUS_COMPLETED: 'completed',

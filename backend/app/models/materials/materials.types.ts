@@ -2,7 +2,7 @@ import { Document, Model } from "mongoose";
 
 export interface IMaterial {
   title: string;
-  assignmentType: string;
+  engagementType: string;
   frequency: string;
   eventStartTime: Date;
   eventEndTime: Date;

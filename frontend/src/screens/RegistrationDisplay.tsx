@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import MaskedInput, { maskArray } from 'react-text-mask';
 import { createStyles, makeStyles, withStyles, Theme } from '@material-ui/core/styles';
 import {
   IconButton,
@@ -6,7 +7,6 @@ import {
   Box,
   Grid,
   FormControl,
-  FormHelperText,
   InputAdornment,
   Input,
   InputLabel,
@@ -15,7 +15,8 @@ import {
   MenuItem,
   Select,
   Checkbox,
-  ListItemText
+  ListItemText,
+  TextField
 } from '@material-ui/core';
 import {
   AccountCircle, Visibility, VisibilityOff,
@@ -23,7 +24,6 @@ import {
 } from '@material-ui/icons';
 import { useMutation } from '@apollo/client';
 
-import TextFormField, { TextFormInput } from '../components/TextFormField';
 import { SvgImageList } from './SvgImageList';
 import { REGISTER, UserInput, GetUserData } from '../gql/queries/Authentication';
 
@@ -102,73 +102,68 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-// const handleCheckAuth = () => {
-//   const { loading } = useQuery<GetUserData, UserInput>(
-//     REGISTER,
-//     {
-
-//     }
-//   )
-// }
-
 type RegistrationFormFields = {
-  name: string | null;
-  phone: string | null;
-  email: string | null;
-  password: string | null;
-  gender: string | null;
+  name: string;
+  phone: string;
+  email: string;
+  password: string;
+  gender: string;
   skills: { [key: string]: boolean; };
   major: string;
-  year: number | null;
+  year: string;
   experience: string;
   timetable: string;
-  showPassword?: boolean;
+  showPassword: boolean;
 }
 
-const fieldValidation: { [key: string]: (val: any) => boolean; } = {
-  name: (val: any) => val !== '',
-  phone: (val: any) => val !== '' && !isNaN(val),
-  email: (val: any) => val !== '',
-  password: (val: any) => val !== '',
-  gender: (val: any) => val !== '',
-  major: (val: any) => true,
-  year: (val: any) => val === null || (!isNaN(val) && (val >= 1 && val <= 4)),
-  timetable: (val: any) => true,
+interface TextMaskCustomProps {
+  inputRef: (ref: HTMLInputElement | null) => void;
 }
 
-const firstPageRender = (onChange: any, onShowPasswordToggle: any, value: any, classes: any) => {
-  const nameFieldInput: TextFormInput = {
-    onChange,
-    value,
-    title: 'Name',
-    field: 'name',
-    icon: () => { return (<AccountCircle />); },
-    validate: fieldValidation.name,
-    errorMessage: 'Field should not be empty',
-    required: true
+const TextMaskYear = (props: TextMaskCustomProps) => {
+  const { inputRef, ...other } = props;
+
+  return (
+    <MaskedInput
+      {...other}
+      ref={(ref: any) => {
+        inputRef(ref ? ref.inputElement : null);
+      }}
+      mask={[/[1-5]/]}
+    />
+  );
+}
+
+const TextMaskEmail = (props: TextMaskCustomProps) => {
+  const { inputRef, ...other } = props;
+
+  const customMask = (value: string) => {
+    const user = value.split('@')[0];
+    const masking: maskArray = ['@u.nus.edu'];
+    for (let i = 0; i < user.length; i++) {
+      
+      masking.unshift(/[a-zA-Z0-9._+-]/);
+    }
+    return masking;
   }
 
-  const phoneFieldInput: TextFormInput = {
-    onChange,
-    value,
-    title: 'Phone',
-    field: 'phone',
-    icon: () => { return (<Phone />); },
-    validate: fieldValidation.phone,
-    errorMessage: 'Only digits are allowed',
-    required: true
-  }
+  return (
+    <MaskedInput
+      {...other}
+      ref={(ref: any) => {
+        inputRef(ref ? ref.inputElement : null);
+      }}
+      mask={(value) => customMask(value)}
+    />
+  );
+}
 
-  const emailFieldInput: TextFormInput = {
-    onChange,
-    value,
-    title: 'Email',
-    field: 'email',
-    icon: () => { return (<Email />); },
-    validate: fieldValidation.email,
-    errorMessage: 'Email should be an NUS Email',
-    required: true
-  }
+const firstPageRender = (
+  onChange: (event: any, key: keyof RegistrationFormFields) => void,
+  onShowPasswordToggle: (key: keyof RegistrationFormFields) => void,
+  value: RegistrationFormFields,
+  classes: any
+) => {
 
   return (
     <Grid
@@ -179,14 +174,72 @@ const firstPageRender = (onChange: any, onShowPasswordToggle: any, value: any, c
       spacing={1}
       className={classes.registerGridContainer}
     >
+
       {/* Name Field */}
-      <TextFormField {...nameFieldInput} />
+      <Grid item>
+        <Grid
+          container
+          spacing={1}
+          alignItems="flex-end"
+          className={`${classes.margin} ${classes.formField}`}>
+          <Grid item>
+            <AccountCircle />
+          </Grid>
+          <Grid item>
+            <TextField label={'Name'}
+              required
+              className={classes.textField}
+              value={value['name']}
+              onChange={event => onChange(event, 'name')} />
+          </Grid>
+        </Grid>
+      </Grid>
 
       {/* Phone Field */}
-      <TextFormField {...phoneFieldInput} />
+      <Grid item>
+        <Grid
+          container
+          spacing={1}
+          alignItems="flex-end"
+          className={`${classes.margin} ${classes.formField}`}>
+          <Grid item>
+            <Phone />
+          </Grid>
+          <Grid item>
+            <TextField label={'Phone'}
+              required
+              className={classes.textField}
+              value={value['phone']}
+              type='number'
+              onChange={event => onChange(event, 'phone')} />
+          </Grid>
+        </Grid>
+      </Grid>
 
       {/* Email Field */}
-      <TextFormField {...emailFieldInput} />
+      <Grid item>
+        <Grid
+          container
+          spacing={1}
+          alignItems="flex-end"
+          className={`${classes.margin} ${classes.formField}`}>
+          <Grid item>
+            <Email />
+          </Grid>
+          <Grid item>
+            <FormControl required className={`${classes.textField}`}>
+              <InputLabel htmlFor="university-email">NUS Email</InputLabel>
+              <Input
+                value={value['email']}
+                onChange={event => onChange(event, 'email')}
+                name="textmaskemail"
+                id="university-email"
+                inputComponent={TextMaskEmail as any}
+              />
+            </FormControl>
+          </Grid>
+        </Grid>
+      </Grid>
 
       {/* Password Field */}
       <Grid item>
@@ -201,7 +254,6 @@ const firstPageRender = (onChange: any, onShowPasswordToggle: any, value: any, c
           <Grid item>
             <FormControl
               required
-              error={!fieldValidation.password(value['password'])}
               className={`${classes.textField}`}>
               <InputLabel htmlFor="standard-adornment-password">Password</InputLabel>
               <Input
@@ -213,7 +265,7 @@ const firstPageRender = (onChange: any, onShowPasswordToggle: any, value: any, c
                   <InputAdornment position="end">
                     <IconButton
                       aria-label="toggle password visibility"
-                      onClick={event => onShowPasswordToggle('showPassword')}
+                      onClick={() => onShowPasswordToggle('showPassword')}
                       onMouseDown={event => event.preventDefault()}
                     >
                       {value['showPassword'] ? <Visibility /> : <VisibilityOff />}
@@ -221,12 +273,6 @@ const firstPageRender = (onChange: any, onShowPasswordToggle: any, value: any, c
                   </InputAdornment>
                 }
               />
-              <FormHelperText>
-                {
-                  fieldValidation.password(value['password']) ?
-                    '' : 'Password cannot be empty'
-                }
-              </FormHelperText>
             </FormControl>
           </Grid>
         </Grid>
@@ -235,48 +281,15 @@ const firstPageRender = (onChange: any, onShowPasswordToggle: any, value: any, c
   );
 }
 
-const secondPageRender = (onChange: any, handleCheckboxChange: any, value: any, classes: any) => {
-  const facultyFieldInput: TextFormInput = {
-    onChange,
-    value,
-    title: 'Faculty & Major',
-    field: 'major',
-    icon: () => { return (<Home />); },
-    validate: fieldValidation.major,
-    errorMessage: 'Error',
-    required: false
-  }
-
-  const yearFieldInput: TextFormInput = {
-    onChange,
-    value,
-    title: 'Year',
-    field: 'year',
-    icon: () => { return (<School />); },
-    validate: fieldValidation.year,
-    errorMessage: 'Year should be between 1 to 4',
-    required: false
-  }
-
-  const timetableFieldInput: TextFormInput = {
-    onChange,
-    value,
-    title: 'Timetable',
-    field: 'timetable',
-    icon: () => {
-      return (
-        <SvgIcon>
-          {SvgImageList.timetable()}
-        </SvgIcon>
-      );
-    },
-    validate: fieldValidation.timetable,
-    errorMessage: 'Timetable should be an NUSMods Link',
-    required: false
-  }
+const secondPageRender = (
+  onChange: (event: any, key: keyof RegistrationFormFields) => void,
+  handleCheckboxChange: (itemKey: string) => void,
+  value: RegistrationFormFields,
+  classes: any
+) => {
   const skillsArray: string[] = [];
   Object.entries(value['skills']).forEach(([key, val]) => {
-    if (val) { skillsArray.push(key) };
+    if (val) { skillsArray.push(key); }
   });
 
   return (
@@ -297,12 +310,13 @@ const secondPageRender = (onChange: any, handleCheckboxChange: any, value: any, 
           alignItems="flex-end"
           className={`${classes.margin} ${classes.formField}`}>
           <Grid item>
-            <Home />
+          <SvgIcon style={{ fontSize: 30 }}>
+              {SvgImageList.gender()}
+            </SvgIcon>
           </Grid>
           <Grid item>
             <FormControl
               required
-              error={!fieldValidation.gender(value['gender'])}
               className={`${classes.textField}`}>
               <InputLabel htmlFor="gender-select">Gender</InputLabel>
               <Select
@@ -313,20 +327,75 @@ const secondPageRender = (onChange: any, handleCheckboxChange: any, value: any, 
                 <MenuItem value={'male'}>Male</MenuItem>
                 <MenuItem value={'female'}>Female</MenuItem>
               </Select>
-              <FormHelperText>A gender must be chosen</FormHelperText>
             </FormControl>
           </Grid>
         </Grid>
       </Grid>
 
-      {/* Faculty Field */}
-      <TextFormField {...facultyFieldInput} />
+      {/* Timetable Field */}
+      <Grid item>
+        <Grid
+          container
+          spacing={1}
+          alignItems="flex-end"
+          className={`${classes.margin} ${classes.formField}`}>
+          <Grid item>
+            <SvgIcon style={{ fontSize: 30 }}>
+              {SvgImageList.timetable()}
+            </SvgIcon>
+          </Grid>
+          <Grid item>
+            <TextField label={'Timetable'}
+              className={classes.textField}
+              value={value['timetable']}
+              onChange={event => onChange(event, 'timetable')} />
+          </Grid>
+        </Grid>
+      </Grid>
 
       {/* Year Field */}
-      <TextFormField {...yearFieldInput} />
+      <Grid item>
+        <Grid
+          container
+          spacing={1}
+          alignItems="flex-end"
+          className={`${classes.margin} ${classes.formField}`}>
+          <Grid item>
+            <School />
+          </Grid>
+          <Grid item>
+            <FormControl className={`${classes.textField}`}>
+              <InputLabel htmlFor="university-year">Year (1 - 5)</InputLabel>
+              <Input
+                value={value['year']}
+                onChange={event => onChange(event, 'year')}
+                name="textmaskyear"
+                id="university-year"
+                inputComponent={TextMaskYear as any}
+              />
+            </FormControl>
+          </Grid>
+        </Grid>
+      </Grid>
 
-      {/* Timetable Field */}
-      <TextFormField {...timetableFieldInput} />
+      {/* Faculty & Major Field */}
+      <Grid item>
+        <Grid
+          container
+          spacing={1}
+          alignItems="flex-end"
+          className={`${classes.margin} ${classes.formField}`}>
+          <Grid item>
+            <Home />
+          </Grid>
+          <Grid item>
+            <TextField label={'Faculty & Major'}
+              className={classes.textField}
+              value={value['major']}
+              onChange={event => onChange(event, 'major')} />
+          </Grid>
+        </Grid>
+      </Grid>
 
       {/* Skills Field */}
       <Grid item>
@@ -336,7 +405,7 @@ const secondPageRender = (onChange: any, handleCheckboxChange: any, value: any, 
           alignItems="flex-end"
           className={`${classes.margin} ${classes.formField}`}>
           <Grid item>
-            <SvgIcon>
+            <SvgIcon style={{ fontSize: 30 }}>
               {SvgImageList.skills()}
             </SvgIcon>
           </Grid>
@@ -366,7 +435,6 @@ const secondPageRender = (onChange: any, handleCheckboxChange: any, value: any, 
         </Grid>
       </Grid>
 
-
       {/* Volunteer Experience Field */}
       <Grid item>
         <Grid
@@ -375,7 +443,7 @@ const secondPageRender = (onChange: any, handleCheckboxChange: any, value: any, 
           alignItems="flex-end"
           className={`${classes.margin} ${classes.formField}`}>
           <Grid item>
-            <SvgIcon>
+            <SvgIcon style={{ fontSize: 30 }}>
               {SvgImageList.experience()}
             </SvgIcon>
           </Grid>
@@ -397,33 +465,28 @@ const secondPageRender = (onChange: any, handleCheckboxChange: any, value: any, 
         </Grid>
       </Grid>
 
-
     </Grid>
   );
 }
 
-const RegistrationDisplay = () => {
+const RegistrationDisplay = (history: any) => {
   const [page, setPage] = useState<number>(1);
   const [submitForm, { data }] = useMutation<GetUserData, UserInput>(REGISTER, {
-    onCompleted: (data: any) => console.log(data),
+    onCompleted: (data: any) => {
+      console.log(data);
+      history.history.push({ pathname: '/login' });
+    },
     onError: (err: any) => console.log(err)
   });
   const [value, setValue] = useState<RegistrationFormFields>({
-    name: null,
-    phone: null,
-    email: null,
-    password: null,
-    gender: null,
+    name: '', phone: '', email: '', password: '', gender: '',
     skills: {
       'First Aid': false,
       'People Skills': false,
       'Sign Language': false,
       'Social Work Knowledge': false
     },
-    major: '',
-    year: null,
-    experience: '',
-    timetable: '',
+    major: '', year: '', experience: '', timetable: '',
     showPassword: false
   });
 
@@ -443,89 +506,49 @@ const RegistrationDisplay = () => {
 
   const onChangePage = (event: any) => {
     event.preventDefault();
-    const firstPageFields: (keyof RegistrationFormFields)[] = ['name', 'phone', 'email', 'password'];
-    let validInput: boolean = true;
-    const newValue: RegistrationFormFields = { ...value };
-    for (let el of firstPageFields) {
-      if (value[el] !== null) {
-        if (!fieldValidation[el](value[el])) {
-          validInput = false;
-        }
-      } else {
-        newValue[el] = '' as never;
-        validInput = false;
-      }
-    }
-    setValue({ ...newValue });
-    if (validInput) {
-      setPage(2);
-    }
+    setPage(2);
   };
 
   const onFormSubmit = (event: any) => {
     event.preventDefault();
-    const firstPageFields: (keyof RegistrationFormFields)[] = ['gender', 'major', 'year', 'timetable'];
-    let validInput: boolean = true;
-    const newValue: RegistrationFormFields = { ...value };
-    for (let el of firstPageFields) {
-      if (value[el] !== null) {
-        if (!fieldValidation[el](value[el])) {
-          validInput = false;
-        }
-      } else {
-        newValue[el] = '' as never;
-        validInput = false;
+    const skillsArray: string[] = [];
+    Object.entries(value['skills']).forEach(([key, val]) => {
+      if (val) { skillsArray.push(key) }
+    });
+    const { name, phone, email, password, 
+      gender, major, experience, timetable } = value;
+    const userDetails: UserInput = {
+      user: {
+        name, phone, email, password,
+        gender, major, experience, timetable,
+        year: Number(value['year']),
+        skills: skillsArray,
+        role: 'volunteer'
       }
     }
-    if (validInput) {
-      const skillsArray: string[] = [];
-      Object.entries(value['skills']).forEach(([key, val]) => {
-        if (val) { skillsArray.push(key) }
-      });
-      const userDetails: UserInput = {
-        user: {
-          name: value['name'] || '',
-          phone: value['phone'] || '',
-          email: value['email'] || '',
-          password: value['password'] || '',
-          gender: value['gender'] || '',
-          major: value['major'],
-          timetable: value['timetable'],
-          experience: value['experience'],
-          skills: skillsArray,
-          role: 'volunteer'
-        }
-      }
-      if (value['year']) { userDetails.user['year'] = Number(value['year']); }
-      submitForm({variables: { ...userDetails }});
-      console.log(userDetails);
-    } else {
-      setValue({ ...newValue });
-    }
+
+    submitForm({ variables: { ...userDetails } });
+    console.log(userDetails);
   }
 
   const classes = useStyles();
 
   return (
     <Box className={classes.registerContainer}>
-      <form className={classes.root}>
+      <div className={classes.root}>
         <Typography variant={'h4'} className={classes.title}>Sign Up</Typography>
         {
           page === 1 ?
-            <div>
+            <form onSubmit={event => onChangePage(event)}>
               {firstPageRender(onChange, onShowPasswordToggle, value, classes)}
-              <ColorButton
-                color="primary"
-                onClick={e => onChangePage(e)}>CONTINUE</ColorButton>
-            </div>
-            : <div>
+              <ColorButton type="submit" color="primary">CONTINUE</ColorButton>
+            </form>
+            : <form onSubmit={event => onFormSubmit(event)}>
               {secondPageRender(onChange, handleCheckboxChange, value, classes)}
-              <ColorButton
-                color="primary"
-                onClick={e => onFormSubmit(e)}>REGISTER</ColorButton>
-            </div>
+              <ColorButton type="submit" color="primary">REGISTER</ColorButton>
+            </form>
         }
-      </form>
+      </div>
     </Box>
   );
 }

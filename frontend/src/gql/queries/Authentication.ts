@@ -25,11 +25,16 @@ export interface GetUserData {
   name: string;
   phone: string;
   email: string;
+  profileImage: string;
   skills: string[];
   role: string;
-  completedAssignments: [];
-  acceptedAssignments: [];
-  savedAssignments: [];
+  major: string;
+  year: number;
+  experience: string;
+  timetable: string;
+  completedEngagements: [];
+  acceptedEngagements: [];
+  savedEngagements: [];
 }
 
 export const REGISTER = gql`
@@ -38,15 +43,20 @@ mutation register($user: UserInput!) {
       name
       phone
       email
+      profileImage
       skills
       role
-      completedAssignments {
+      major
+      year
+      experience
+      timetable
+      completedEngagements {
         title
       }
-      acceptedAssignments {
+      acceptedEngagements {
         title
       }
-      savedAssignments {
+      savedEngagements {
         title
       }
     }
@@ -54,28 +64,91 @@ mutation register($user: UserInput!) {
 `;
 
 export const LOGIN = gql`
-query login($email: String!, $password: String!) {
+mutation login($email: String!, $password: String!) {
     login(email: $email, password: $password) {
       name
       phone
       email
+      profileImage
       skills
       role
-      completedAssignments {
+      major
+      year
+      experience
+      timetable
+      completedEngagements {
         title
       }
-      acceptedAssignments {
+      acceptedEngagements {
         title
       }
-      savedAssignments {
+      savedEngagements {
         title
       }
     }
   }
 `;
 
+export const LOGOUT = gql`
+mutation logout {
+  logout
+}
+`;
+
 export const CHECK_AUTH = gql`
 query checkAuth {
   checkAuth
+}
+`;
+
+export const GET_MY_INFO = gql`
+query getMyInfo {
+  getMyInfo {
+      name
+      phone
+      email
+      profileImage
+      skills
+      role
+      major
+      year
+      experience
+      timetable
+      completedEngagements {
+        title
+      }
+      acceptedEngagements {
+        title
+      }
+      savedEngagements {
+        title
+      }
+    }
+}
+`;
+
+export const UPLOAD_PROFILE_IMAGE = gql`
+mutation uploadProfileImage($profileImage: String!) {
+  uploadProfileImage(profileImage: $profileImage) {
+      name
+      phone
+      email
+      profileImage
+      skills
+      role
+      major
+      year
+      experience
+      timetable
+      completedEngagements {
+        title
+      }
+      acceptedEngagements {
+        title
+      }
+      savedEngagements {
+        title
+      }
+    }
 }
 `;

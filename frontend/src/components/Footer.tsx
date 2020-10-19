@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, createStyles, makeStyles, Theme, Typography } from '@material-ui/core';
 import { useMediaQuery } from 'react-responsive';
-
+import { appColors } from '../theme/globalTheme';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -51,7 +51,9 @@ const Footer = () => {
   return (
     <Box className={isMobile ? classes.footerContainerMobile : classes.footerContainer}>
       <Box className={isMobile ? classes.footerPartitionMobile : classes.footerPartition}>
-        <Typography variant='h6' className={isMobile ? classes.footerLogoMobile : classes.footerLogo}>voltch</Typography>
+        <Typography variant='h6' style={{ color: appColors.mediumRed }}
+        className={isMobile ? classes.footerLogoMobile : classes.footerLogo}
+        >voltch</Typography>
         <Typography className={classes.fadedText}>In collaboration with</Typography>
         <Typography className={classes.fadedText}><strong>NUS Disability Support Office</strong></Typography>
       </Box>

@@ -4,22 +4,24 @@ const typeDefs = gql`
   scalar Date
   
   type Query {
-    login(email: String!, password: String!): User
     checkAuth: Boolean
     getMyInfo: User
-    getAssignment(_id: ID): Assignment
-    getAllAssignments: [Assignment]
-    getAssignments(startId: ID!, perPage: Int!): [Assignment]
-    searchAssignments(searchString: String): [Assignment]
+    getEngagement(_id: ID): Engagement
+    getAllEngagements: [Engagement]
+    getEngagements(startId: ID!, perPage: Int!): [Engagement]
+    searchEngagements(searchString: String): [Engagement]
   }
   type Mutation {
+    login(email: String!, password: String!): User
+    logout: Boolean
     register(user: UserInput!): User
-    createAssignment(assignment: AssignmentInput!): Assignment
-    updateAssignment(assignment: AssignmentInput!): Assignment
-    deleteAssignment(_id: ID): Boolean
-    acceptAssignment(assignmentId: ID): User
-    completeAssignment(assignmentId: ID): User
-    saveAssignment(assignmentId: ID): User
+    uploadProfileImage(profileImage: String!): User
+    createEngagement(engagement: EngagementInput!): Engagement
+    updateEngagement(engagement: EngagementInput!): Engagement
+    deleteEngagement(_id: ID): Boolean
+    acceptEngagement(engagementId: ID): User
+    completeEngagement(engagementId: ID): User
+    saveEngagement(engagementId: ID): User
   }
   input UserInput {
     name: String!
@@ -38,16 +40,22 @@ const typeDefs = gql`
     name: String
     phone: String
     email: String
+    profileImage: String
+    gender: String
     skills: [String]
     role: String
-    completedAssignments: [Assignment]
-    acceptedAssignments: [Assignment]
-    savedAssignments: [Assignment]
+    major: String
+    year: Int
+    experience: String
+    timetable: String
+    completedEngagements: [Engagement]
+    acceptedEngagements: [Engagement]
+    savedEngagements: [Engagement]
   }
-  input AssignmentInput {
+  input EngagementInput {
     _id: ID
     title: String!
-    assignmentType: String!
+    engagementType: String!
     frequency: String!
     description: String!
     location: String!
@@ -58,10 +66,10 @@ const typeDefs = gql`
     major: String
     needMajorMatch: Boolean
   }
-  type Assignment {
+  type Engagement {
     _id: ID
     title: String
-    assignmentType: String
+    engagementType: String
     frequency: String
     description: String
     location: String
