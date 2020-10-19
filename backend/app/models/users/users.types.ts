@@ -15,9 +15,9 @@ export interface IUser {
   experience: string;
   timetable: string;
   role: string;
-  completedAssignments: Schema.Types.ObjectId[];
-  acceptedAssignments: Schema.Types.ObjectId[];
-  savedAssignments: Schema.Types.ObjectId[];
+  completedEngagements: Schema.Types.ObjectId[];
+  acceptedEngagements: Schema.Types.ObjectId[];
+  savedEngagements: Schema.Types.ObjectId[];
 }
 export interface IUserDocument extends IUser, Document {
   generateToken: (

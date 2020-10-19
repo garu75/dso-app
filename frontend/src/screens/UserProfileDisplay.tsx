@@ -90,9 +90,9 @@ const UserProfileDisplay = () => {
     year: -1,
     experience: '',
     timetable: '',
-    completedAssignments: [],
-    acceptedAssignments: [],
-    savedAssignments: []
+    completedEngagements: [],
+    acceptedEngagements: [],
+    savedEngagements: []
   });
 
   useQuery<boolean, null>(

@@ -1,9 +1,9 @@
 import { Schema } from 'mongoose';
 import { Document, Model } from "mongoose";
 
-export interface IAssignment {
+export interface IEngagement {
   title: string;
-  assignmentType: string;
+  engagementType: string;
   frequency: string;
   description: string;
   eventStartTime: Date;
@@ -16,8 +16,8 @@ export interface IAssignment {
   status: string;
   creator: Schema.Types.ObjectId;
 }
-export interface IAssignmentDocument extends IAssignment, Document {
+export interface IEngagementDocument extends IEngagement, Document {
 }
 
-export interface IAssignmentModel extends Model<IAssignmentDocument> {
+export interface IEngagementModel extends Model<IEngagementDocument> {
 }

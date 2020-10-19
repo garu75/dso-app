@@ -1,11 +1,11 @@
 import { gql } from '@apollo/client';
 
-export interface GetAssignmentsVariables {
+export interface GetEngagementsVariables {
   startId: string;
   perPage: number;
 }
 
-export interface GetAssignmentsData {
+export interface GetEngagementsData {
   result: {
     _id: string;
     title: string;
@@ -27,9 +27,9 @@ export interface EngagementFields {
   eventEndTime: string;
 }
 
-export const GET_ASSIGNMENTS = gql`
-  query getAssignments($startId: ID!, $perPage: Int!) {
-    result: getAssignments(startId: $startId, perPage: $perPage) {
+export const GET_ENGAGEMENTS = gql`
+  query getEngagements($startId: ID!, $perPage: Int!) {
+    result: getEngagements(startId: $startId, perPage: $perPage) {
       _id
       title
       frequency

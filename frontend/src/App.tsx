@@ -21,16 +21,6 @@ function App() {
   return (
     <ApolloProvider client={client}>
       <ThemeProvider theme={appTheme}>
-        <AppBar color='primary'>
-          <Toolbar>
-            <IconButton edge="start" color="inherit" aria-label="menu">
-              <MenuIcon />
-            </IconButton>
-            <Typography variant="h6" >
-              voltch
-          </Typography>
-          </Toolbar>
-        </AppBar>
         <div className="App">
         <Router>
           <Switch>

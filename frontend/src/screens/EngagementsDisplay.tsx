@@ -8,12 +8,11 @@ import { useMediaQuery } from 'react-responsive';
 import EngagementCard from '../components/EngagementCard';
 
 import {
-  GET_ASSIGNMENTS,
-  GetAssignmentsVariables,
-  GetAssignmentsData,
+  GET_ENGAGEMENTS,
+  GetEngagementsVariables,
+  GetEngagementsData,
   EngagementFields
-} from '../gql/queries/GetAssignments';
-import Footer from '../components/Footer';
+} from '../gql/queries/GetEngagements';
 
 const ENGAGEMENTS_PER_PAGE = 5;
 
@@ -79,8 +78,8 @@ const EngagementsDisplay = () => {
   const [isLoadExisting, setIsLoadExisting] = useState<boolean>(true);
   const [lastEngagementId, setLastEngagementId] = useState<string>('');
   const [skipQuery, setSkipQuery] = useState<boolean>(true);
-  useQuery<GetAssignmentsData, GetAssignmentsVariables>(
-    GET_ASSIGNMENTS,
+  useQuery<GetEngagementsData, GetEngagementsVariables>(
+    GET_ENGAGEMENTS,
     {
       variables: { startId: lastEngagementId, perPage: ENGAGEMENTS_PER_PAGE },
       skip: skipQuery,

@@ -32,9 +32,9 @@ export interface GetUserData {
   year: number;
   experience: string;
   timetable: string;
-  completedAssignments: [];
-  acceptedAssignments: [];
-  savedAssignments: [];
+  completedEngagements: [];
+  acceptedEngagements: [];
+  savedEngagements: [];
 }
 
 export const REGISTER = gql`
@@ -50,13 +50,13 @@ mutation register($user: UserInput!) {
       year
       experience
       timetable
-      completedAssignments {
+      completedEngagements {
         title
       }
-      acceptedAssignments {
+      acceptedEngagements {
         title
       }
-      savedAssignments {
+      savedEngagements {
         title
       }
     }
@@ -64,7 +64,7 @@ mutation register($user: UserInput!) {
 `;
 
 export const LOGIN = gql`
-query login($email: String!, $password: String!) {
+mutation login($email: String!, $password: String!) {
     login(email: $email, password: $password) {
       name
       phone
@@ -76,17 +76,23 @@ query login($email: String!, $password: String!) {
       year
       experience
       timetable
-      completedAssignments {
+      completedEngagements {
         title
       }
-      acceptedAssignments {
+      acceptedEngagements {
         title
       }
-      savedAssignments {
+      savedEngagements {
         title
       }
     }
   }
+`;
+
+export const LOGOUT = gql`
+mutation logout {
+  logout
+}
 `;
 
 export const CHECK_AUTH = gql`
@@ -108,13 +114,13 @@ query getMyInfo {
       year
       experience
       timetable
-      completedAssignments {
+      completedEngagements {
         title
       }
-      acceptedAssignments {
+      acceptedEngagements {
         title
       }
-      savedAssignments {
+      savedEngagements {
         title
       }
     }
@@ -134,13 +140,13 @@ mutation uploadProfileImage($profileImage: String!) {
       year
       experience
       timetable
-      completedAssignments {
+      completedEngagements {
         title
       }
-      acceptedAssignments {
+      acceptedEngagements {
         title
       }
-      savedAssignments {
+      savedEngagements {
         title
       }
     }

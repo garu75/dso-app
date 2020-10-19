@@ -3,9 +3,9 @@ import Constants from '../../../../common/Constants';
 
 const ObjectId = Schema.Types.ObjectId;
 
-const AssigmentSchema = new Schema({
+const EngagementSchema = new Schema({
   title: { type: String, max: 50, text: true },
-  assignmentType: {
+  engagementType: {
     type: String,
     enum: [
     ],
@@ -46,4 +46,4 @@ const AssigmentSchema = new Schema({
   creator: { type: ObjectId, ref: "UserModel" }
 });
 
-export default AssigmentSchema;
+export default EngagementSchema;

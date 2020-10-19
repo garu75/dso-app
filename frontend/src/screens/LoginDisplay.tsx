@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import MaskedInput, { maskArray } from 'react-text-mask';
 import { createStyles, makeStyles, withStyles, Theme } from '@material-ui/core/styles';
 import {
   IconButton,
@@ -6,16 +7,14 @@ import {
   Box,
   Grid,
   FormControl,
-  FormHelperText,
   InputAdornment,
   Input,
   InputLabel,
   Button,
 } from '@material-ui/core';
 import { Visibility, VisibilityOff, Lock, Email } from '@material-ui/icons';
-import { useLazyQuery } from '@apollo/client';
+import { useMutation } from '@apollo/client';
 
-import TextFormField, { TextFormInput } from '../components/TextFormField';
 import { LOGIN, LoginInput, GetUserData } from '../gql/queries/Authentication';
 
 const ColorButton = withStyles((theme: Theme) => ({
@@ -88,20 +87,36 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-type EmptyFieldCheck = { [key: string]: boolean }
+interface TextMaskCustomProps {
+  inputRef: (ref: HTMLInputElement | null) => void;
+}
 
-const formFieldRender = (onChange: any, onShowPasswordToggle: any, 
-  value: any, emptyField: EmptyFieldCheck, classes: any) => {
-  const emailFieldInput: TextFormInput = {
-    onChange,
-    value,
-    title: 'Email',
-    field: 'email',
-    icon: () => { return (<Email />); },
-    validate: (val: any) => !emptyField.email,
-    errorMessage: 'Email cannot be empty',
-    required: true
+const TextMaskEmail = (props: TextMaskCustomProps) => {
+  const { inputRef, ...other } = props;
+
+  const customMask = (value: string) => {
+    const user = value.split('@')[0];
+    const masking: maskArray = ['@u.nus.edu'];
+    for (let i = 0; i < user.length; i++) {
+
+      masking.unshift(/[a-zA-Z0-9._+-]/);
+    }
+    return masking;
   }
+
+  return (
+    <MaskedInput
+      {...other}
+      ref={(ref: any) => {
+        inputRef(ref ? ref.inputElement : null);
+      }}
+      mask={(value) => customMask(value)}
+    />
+  );
+}
+
+const formFieldRender = (onChange: any, onShowPasswordToggle: any,
+  value: any, classes: any) => {
 
   return (
     <Grid
@@ -112,8 +127,31 @@ const formFieldRender = (onChange: any, onShowPasswordToggle: any,
       spacing={1}
       className={classes.registerGridContainer}
     >
+
       {/* Email Field */}
-      <TextFormField {...emailFieldInput} />
+      <Grid item>
+        <Grid
+          container
+          spacing={1}
+          alignItems="flex-end"
+          className={`${classes.margin} ${classes.formField}`}>
+          <Grid item>
+            <Email />
+          </Grid>
+          <Grid item>
+            <FormControl required className={`${classes.textField}`}>
+              <InputLabel htmlFor="university-email">NUS Email</InputLabel>
+              <Input
+                value={value['email']}
+                onChange={event => onChange(event, 'email')}
+                name="textmaskemail"
+                id="university-email"
+                inputComponent={TextMaskEmail as any}
+              />
+            </FormControl>
+          </Grid>
+        </Grid>
+      </Grid>
 
       {/* Password Field */}
       <Grid item>
@@ -128,7 +166,6 @@ const formFieldRender = (onChange: any, onShowPasswordToggle: any,
           <Grid item>
             <FormControl
               required
-              error={emptyField.password}
               className={`${classes.textField}`}>
               <InputLabel htmlFor="standard-adornment-password">Password</InputLabel>
               <Input
@@ -148,12 +185,6 @@ const formFieldRender = (onChange: any, onShowPasswordToggle: any,
                   </InputAdornment>
                 }
               />
-              <FormHelperText>
-                {
-                  emptyField.password ?
-                  'Password cannot be empty' : ''
-                }
-              </FormHelperText>
             </FormControl>
           </Grid>
         </Grid>
@@ -162,19 +193,27 @@ const formFieldRender = (onChange: any, onShowPasswordToggle: any,
   );
 }
 
-const LoginDisplay = () => {
-  const [submitForm, { loading, data }] = useLazyQuery<GetUserData, LoginInput>(LOGIN, {
+type LoginProps = {
+  setUserInfo: any;
+  history: any;
+}
+
+const LoginDisplay = (props: LoginProps) => {
+  const { setUserInfo, history } = props;
+  const [value, setValue] = useState<LoginInput>({ email: "", password: "" });
+  
+  const [login] = useMutation<GetUserData, LoginInput>(LOGIN, {
     onCompleted: (data: any) => {
-      console.log(data);
       document.cookie = 'signedin=true';
+      history.replace({ pathname: '/' });
+      setUserInfo({
+        isLoggedIn: true,
+        name: data.login.name,
+        profileImage: data.login.profileImage
+      });
     },
     onError: (err: any) => console.log(err)
   });
-  const [value, setValue] = useState<LoginInput>({ email: "", password: "" });
-  const [emptyField, setEmptyField] = useState<EmptyFieldCheck>({
-    email: false,
-    password: false
-  })
 
   const onChange = (event: any, key: keyof LoginInput) => {
     setValue({ ...value, [key]: event.target.value });
@@ -186,20 +225,8 @@ const LoginDisplay = () => {
 
   const onFormSubmit = (event: any) => {
     event.preventDefault();
-    let validInput: boolean = true;
-    const newEmptyField = {...emptyField}
-    for (let [key, val] of Object.entries(value)) {
-      if (val === "") {
-        validInput = false;
-        newEmptyField[key] = true;
-      } else {
-        newEmptyField[key] = false;
-      }
-    }
-    setEmptyField({...newEmptyField});
-    if (validInput) {
-      submitForm({variables: { email: value['email'], password: value['password'] }});
-    }
+    console.log('clicked');
+    login({ variables: { email: value['email'], password: value['password'] } });
   }
 
   const classes = useStyles();
@@ -208,12 +235,12 @@ const LoginDisplay = () => {
     <Box className={classes.registerContainer}>
       <form className={classes.root}>
         <Typography variant={'h4'} className={classes.title}>Sign In</Typography>
-            <div>
-              {formFieldRender(onChange, onShowPasswordToggle, value, emptyField, classes)}
-              <ColorButton
-                color="primary"
-                onClick={e => onFormSubmit(e)}>LOGIN</ColorButton>
-            </div>
+        <div>
+          {formFieldRender(onChange, onShowPasswordToggle, value, classes)}
+          <ColorButton
+            color="primary"
+            onClick={e => onFormSubmit(e)}>LOGIN</ColorButton>
+        </div>
       </form>
     </Box>
   );

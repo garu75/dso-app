@@ -10,15 +10,15 @@ const UserSchema = new Schema({
   name: { type: String, max: 50 },
   phone: { type: String },
   password: { type: String, min: 5, required: true },
-  completedAssignments: { 
-    type: [{type: ObjectId, ref: 'assignment' }],
+  completedEngagements: { 
+    type: [{type: ObjectId, ref: 'engagement' }],
   },
-  acceptedAssignments: { 
-    type: [{type: ObjectId, ref: 'assignment' }],
+  acceptedEngagements: { 
+    type: [{type: ObjectId, ref: 'engagement' }],
     
   },
-  savedAssignments: { 
-    type: [{type: ObjectId, ref: 'assignment' }],
+  savedEngagements: { 
+    type: [{type: ObjectId, ref: 'engagement' }],
   },
   profileImage: { type: String },
   token: { type: String },
