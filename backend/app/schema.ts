@@ -79,6 +79,8 @@ const typeDefs = gql`
     tags: [String]
     major: String
     needMajorMatch: Boolean
+    status: String
+    isSaved: Boolean
     creator: ID
   }
 `;

@@ -7,12 +7,19 @@ const EngagementSchema = new Schema({
   title: { type: String, max: 50, text: true },
   engagementType: {
     type: String,
+    default: Constants.TYPE_OTHER,
     enum: [
+      Constants.TYPE_NOTE_TAKING,
+      Constants.TYPE_MOVEMENT,
+      Constants.TYPE_MEAL_BUDDY,
+      Constants.TYPE_MODULE_HELP,
+      Constants.TYPE_OTHER    
     ],
     trim: true,
   },
   frequency: {
     type: String,
+    default: Constants.FREQUENCY_ONCE_OFF,
     enum: [
       Constants.FREQUENCY_ONCE_OFF,
       Constants.FREQUENCY_MONTHLY,

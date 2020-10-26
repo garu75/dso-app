@@ -115,6 +115,59 @@ query getMyInfo {
       experience
       timetable
       completedEngagements {
+        _id
+        title
+        engagementType
+        frequency
+        description
+        location
+        eventStartTime
+        eventEndTime
+        skillsRequired
+        status
+      }
+      acceptedEngagements {
+        _id
+        title
+        engagementType
+        frequency
+        description
+        location
+        eventStartTime
+        eventEndTime
+        skillsRequired
+        status
+      }
+      savedEngagements {
+        _id
+        title
+        engagementType
+        frequency
+        description
+        location
+        eventStartTime
+        eventEndTime
+        skillsRequired
+        status
+      }
+    }
+}
+`;
+
+export const UPLOAD_PROFILE_IMAGE = gql`
+mutation uploadProfileImage($profileImage: String!) {
+  uploadProfileImage(profileImage: $profileImage) {
+      name
+      phone
+      email
+      profileImage
+      skills
+      role
+      major
+      year
+      experience
+      timetable
+      completedEngagements {
         title
       }
       acceptedEngagements {
@@ -127,9 +180,35 @@ query getMyInfo {
 }
 `;
 
-export const UPLOAD_PROFILE_IMAGE = gql`
-mutation uploadProfileImage($profileImage: String!) {
-  uploadProfileImage(profileImage: $profileImage) {
+export const SAVE_ENGAGEMENT = gql`
+mutation saveEngagement($engagementId: ID!) {
+  saveEngagement(engagementId: $engagementId) {
+      name
+      phone
+      email
+      profileImage
+      skills
+      role
+      major
+      year
+      experience
+      timetable
+      completedEngagements {
+        title
+      }
+      acceptedEngagements {
+        title
+      }
+      savedEngagements {
+        title
+      }
+    }
+}
+`;
+
+export const ACCEPT_ENGAGEMENT = gql`
+mutation acceptEngagement($engagementId: ID!) {
+  acceptEngagement(engagementId: $engagementId) {
       name
       phone
       email
