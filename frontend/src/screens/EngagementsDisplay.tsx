@@ -81,6 +81,7 @@ const EngagementsDisplay = () => {
   useQuery<GetEngagementsData, GetEngagementsVariables>(
     GET_ENGAGEMENTS,
     {
+      fetchPolicy: 'no-cache',
       variables: { startId: lastEngagementId, perPage: ENGAGEMENTS_PER_PAGE },
       skip: skipQuery,
       onCompleted: (data: any) => {
@@ -136,11 +137,10 @@ const EngagementsDisplay = () => {
             container
             direction="row"
             wrap="wrap"
-            xs={isMobile ? 12 : 8}
             className={classes.engagementGrid}
           >
-            {engagements.map(({ title, _id }) => {
-              return <EngagementCard name={title} key={_id} />;
+            {engagements.map((engagement, index) => {
+              return <EngagementCard key={index} engagement={engagement} />;
             })}
           </Grid>
         </InfiniteScroll>

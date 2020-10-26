@@ -5,21 +5,28 @@ const Constants = {
   ROLE_ADMIN: 'admin',
 
   // Material Categories
-  CATEGORY_GENERAL_POINTERS: 'generalPointers',
-  CATEGORY_BEFRIENDING_TIPS: 'befriendingTips',
-  CATEGORY_SPECIFIC_SKILLS: 'specificSkills',
+  CATEGORY_GENERAL_POINTERS: 'General Pointers',
+  CATEGORY_BEFRIENDING_TIPS: 'Befriending Tips',
+  CATEGORY_SPECIFIC_SKILLS: 'Specific Skills',
+
+  // Engagment Types
+  TYPE_NOTE_TAKING: "Note Taking",
+  TYPE_MOVEMENT: "Moving Around",
+  TYPE_MEAL_BUDDY: "Meal Buddy",
+  TYPE_MODULE_HELP: "Module Help",
+  TYPE_OTHER: "Other",
 
   // Frequency
-  FREQUENCY_ONCE_OFF: 'onceOff',
-  FREQUENCY_WEEKLY: 'weekly',
-  FREQUENCY_MONTHLY: 'monthly',
-  FREQUENCY_DAILY: 'daily',
-  FREQUENCY_OTHER: 'other',
+  FREQUENCY_ONCE_OFF: 'Once Off',
+  FREQUENCY_WEEKLY: 'Weekly',
+  FREQUENCY_MONTHLY: 'Monthly',
+  FREQUENCY_DAILY: 'Daily',
+  FREQUENCY_OTHER: 'Other',
 
   // Major
-  MAJOR_COMPUTING: 'computing',
-  MAJOR_BUSINESS: 'business',
-  MAJOR_ARTS: 'arts',
+  MAJOR_COMPUTING: 'Computing',
+  MAJOR_BUSINESS: 'Business',
+  MAJOR_ARTS: 'Arts',
 
   // Engagement Status
   STATUS_UNASSIGNED: 'unassigned',

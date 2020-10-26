@@ -15,7 +15,7 @@ import {
 import { Visibility, VisibilityOff, Lock, Email } from '@material-ui/icons';
 import { useMutation } from '@apollo/client';
 
-import { LOGIN, LoginInput, GetUserData } from '../gql/queries/Authentication';
+import { LOGIN, LoginInput, GetUserData } from '../gql/queries/UserQueries';
 
 const ColorButton = withStyles((theme: Theme) => ({
   root: {
@@ -123,7 +123,6 @@ const formFieldRender = (onChange: any, onShowPasswordToggle: any,
       container
       direction="row"
       wrap="wrap"
-      xs={12}
       spacing={1}
       className={classes.registerGridContainer}
     >

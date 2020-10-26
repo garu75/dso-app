@@ -13,7 +13,7 @@ import { School, Home, Email, Phone } from '@material-ui/icons';
 import { useQuery, useMutation } from '@apollo/client';
 
 import { SvgImageList } from './SvgImageList';
-import { GET_MY_INFO, GetUserData, UPLOAD_PROFILE_IMAGE } from '../gql/queries/Authentication';
+import { GET_MY_INFO, GetUserData, UPLOAD_PROFILE_IMAGE } from '../gql/queries/UserQueries';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

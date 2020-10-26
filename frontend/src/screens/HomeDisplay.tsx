@@ -10,7 +10,7 @@ import UserProfileDisplay from './UserProfileDisplay';
 import LoginDisplay from './LoginDisplay';
 import appTheme, { appColors } from '../theme/globalTheme';
 
-import { GET_MY_INFO, LOGOUT } from '../gql/queries/Authentication';
+import { GET_MY_INFO, LOGOUT } from '../gql/queries/UserQueries';
 import Footer from '../components/Footer';
 import Menubar from '../components/Menubar';
 
@@ -18,13 +18,15 @@ type UserInfo = {
   isLoggedIn: boolean;
   name: string;
   profileImage: string;
+  acceptedEngagements: [];
 }
 
 const HomeDisplay = (props: any) => {
   const [userInfo, setUserInfo] = useState<UserInfo>({
     isLoggedIn: false,
     name: "",
-    profileImage: ""
+    profileImage: "",
+    acceptedEngagements: []
   });
 
   const [logout] = useMutation<boolean, null>(
@@ -35,7 +37,8 @@ const HomeDisplay = (props: any) => {
           setUserInfo({
             isLoggedIn: false,
             name: "",
-            profileImage: ""
+            profileImage: "",
+            acceptedEngagements: []
           });
         }
       },
@@ -51,7 +54,8 @@ const HomeDisplay = (props: any) => {
         setUserInfo({
           isLoggedIn: true,
           name: data.getMyInfo.name,
-          profileImage: data.getMyInfo.profileImage
+          profileImage: data.getMyInfo.profileImage,
+          acceptedEngagements: data.getMyInfo.acceptedEngagements
         });
       }
     }
@@ -61,13 +65,13 @@ const HomeDisplay = (props: any) => {
     <ThemeProvider theme={appTheme}>
       <Menubar {...userInfo} logout={logout} />
       <Switch>
-        <Route path="/login" render={() => <LoginDisplay history={props.history} setUserInfo={setUserInfo} /> } />
+        <Route path="/login" render={() => <LoginDisplay history={props.history} setUserInfo={setUserInfo} />} />
         <Route path="/register" component={RegistrationDisplay} />
         {userInfo['isLoggedIn'] && <Route path='/profile' component={UserProfileDisplay} />}
         <Route exact path='/' component={EngagementsDisplay} />
-        <Route path='/details/:id' component={EngagementDetail} />
+        <Route path='/details/:id' render={engagementDetailProps =>
+          <EngagementDetail userInfo={userInfo} {...engagementDetailProps} />} />
       </Switch>
-
       <Footer />
     </ThemeProvider>
   );

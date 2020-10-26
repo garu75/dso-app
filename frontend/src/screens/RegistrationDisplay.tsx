@@ -25,7 +25,7 @@ import {
 import { useMutation } from '@apollo/client';
 
 import { SvgImageList } from './SvgImageList';
-import { REGISTER, UserInput, GetUserData } from '../gql/queries/Authentication';
+import { REGISTER, UserInput, GetUserData } from '../gql/queries/UserQueries';
 
 const ColorButton = withStyles((theme: Theme) => ({
   root: {
@@ -170,13 +170,12 @@ const firstPageRender = (
       container
       direction="row"
       wrap="wrap"
-      xs={12}
       spacing={1}
       className={classes.registerGridContainer}
     >
 
       {/* Name Field */}
-      <Grid item>
+      <Grid item xs={12}>
         <Grid
           container
           spacing={1}
@@ -196,7 +195,7 @@ const firstPageRender = (
       </Grid>
 
       {/* Phone Field */}
-      <Grid item>
+      <Grid item xs={12}>
         <Grid
           container
           spacing={1}
@@ -217,7 +216,7 @@ const firstPageRender = (
       </Grid>
 
       {/* Email Field */}
-      <Grid item>
+      <Grid item xs={12}>
         <Grid
           container
           spacing={1}
@@ -242,7 +241,7 @@ const firstPageRender = (
       </Grid>
 
       {/* Password Field */}
-      <Grid item>
+      <Grid item xs={12}>
         <Grid
           container
           spacing={1}
@@ -297,13 +296,12 @@ const secondPageRender = (
       container
       direction="row"
       wrap="wrap"
-      xs={12}
       spacing={1}
       className={classes.registerGridContainer}
     >
 
       {/* Gender Field */}
-      <Grid item>
+      <Grid item xs={12}>
         <Grid
           container
           spacing={1}
@@ -333,7 +331,7 @@ const secondPageRender = (
       </Grid>
 
       {/* Timetable Field */}
-      <Grid item>
+      <Grid item xs={12}>
         <Grid
           container
           spacing={1}
@@ -354,7 +352,7 @@ const secondPageRender = (
       </Grid>
 
       {/* Year Field */}
-      <Grid item>
+      <Grid item xs={12}>
         <Grid
           container
           spacing={1}
@@ -379,7 +377,7 @@ const secondPageRender = (
       </Grid>
 
       {/* Faculty & Major Field */}
-      <Grid item>
+      <Grid item xs={12}>
         <Grid
           container
           spacing={1}
@@ -398,7 +396,7 @@ const secondPageRender = (
       </Grid>
 
       {/* Skills Field */}
-      <Grid item>
+      <Grid item xs={12}>
         <Grid
           container
           spacing={1}
@@ -436,7 +434,7 @@ const secondPageRender = (
       </Grid>
 
       {/* Volunteer Experience Field */}
-      <Grid item>
+      <Grid item xs={12}>
         <Grid
           container
           spacing={1}

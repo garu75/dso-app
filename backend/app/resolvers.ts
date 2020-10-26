@@ -17,7 +17,7 @@ const resolvers = {
     name: 'Date',
     description: 'Date object for processing datetime',
     serialize(value) {
-      return value.getTime(); // value sent to the client
+      return value; // value sent to the client
     },
     parseValue(value) {
       return new Date(value); // value from the client
@@ -45,7 +45,18 @@ const resolvers = {
     },
     /** Engagement APIs */
     getEngagement: (root: any, args: { _id: Schema.Types.ObjectId }, context: any) => {
-      return EngagementModel.findOne({ _id: args._id })
+      return EngagementModel.findOne({ _id: args._id }).then(engagement => {
+        let isSaved = false;
+        if (context.user) {
+          if (context.user.savedEngagements.indexOf(engagement?._id) !== -1) {
+            isSaved = true;
+          }
+        }
+        const copied: any = { ...engagement };
+        const updated = copied._doc;
+        updated.isSaved = isSaved;
+        return updated;
+      })
         .catch(err => { return new Error(err) });
     },
     getAllEngagements: (root: any, args: {}, context: any) => {
@@ -57,14 +68,27 @@ const resolvers = {
       { startId, perPage }: { startId: Schema.Types.ObjectId, perPage: number },
       context: any,
     ) => {
-      if (!startId) {
-        return EngagementModel.find()
-          .sort({ _id: -1 })
-          .limit(perPage);
+      const options: any = { status: Constants.STATUS_UNASSIGNED };
+      if (startId) {
+        options['_id'] = { $lt: startId };
       }
-      return EngagementModel.find({ _id: { $lt: startId } })
+      return EngagementModel.find(options)
         .sort({ _id: -1 })
-        .limit(perPage);
+        .limit(perPage)
+        .then(engagements => engagements.map(engagement => {
+          let isSaved = false;
+          if (context.user) {
+            if (context.user.savedEngagements.indexOf(engagement?._id) !== -1) {
+              isSaved = true;
+            }
+          }
+          const copied: any = { ...engagement };
+          const updated = copied._doc;
+          updated.isSaved = isSaved;
+          console.log(updated);
+          return updated;
+        }))
+        .catch(err => { return new Error(err) });
     },
 
     searchEngagements: (root: any, args: { searchString: string }, context: any) => {
@@ -141,8 +165,8 @@ const resolvers = {
         }
       }
       if (user) {
-      // Save to mongodb
-      return UserModel.findOneAndUpdate({ _id: user._id}, update, { new: true });
+        // Save to mongodb
+        return UserModel.findOneAndUpdate({ _id: user._id }, update, { new: true });
       }
     },
     /** Engagement APIs */

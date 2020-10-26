@@ -1,15 +1,15 @@
 import React from 'react';
 import { Box, createStyles, makeStyles, Theme, Typography } from '@material-ui/core';
-import FavoriteIcon from '@material-ui/icons/Favorite';
 import EventNoteIcon from '@material-ui/icons/EventNote';
 import ScheduleIcon from '@material-ui/icons/Schedule';
 import RoomIcon from '@material-ui/icons/Room';
 import { useMediaQuery } from 'react-responsive';
-import LongButton from './LongButton';
+import { DateTime } from 'luxon';
+import { Link } from 'react-router-dom';
 
-interface EngagementCardProps {
-  name: string;
-}
+import LongButton from './LongButton';
+import { EngagementFields } from '../gql/queries/GetEngagements';
+import HeartButton from './HeartButton';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -19,6 +19,7 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     subtitle: {
       fontSize: 14,
+      textAlign: 'justify'
     },
     cardContainer: {
       backgroundColor: '#fff',
@@ -58,9 +59,6 @@ const useStyles = makeStyles((theme: Theme) =>
       alignItems: 'flex-start',
       justifyContent: 'flex-start',
     },
-    heartIcon: {
-      color: '#d8d8d8',
-    },
     detailsContainer: {
       display: 'flex',
       justifyContent: 'space-evenly',
@@ -77,37 +75,51 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
+interface EngagementCardProps {
+  engagement: EngagementFields;
+}
+
 const EngagementCard = (props: EngagementCardProps) => {
   const isMobile = useMediaQuery({ query: '(max-width: 1224px)' });
 
+  const { _id, title, description, location, eventStartTime, eventEndTime, isSaved } = props.engagement;
 
-  const { name } = props;
+  const eventDate = eventStartTime ? DateTime.fromISO(eventStartTime).toFormat('dd MMM y') : "No Date Specified";
+
+  const eventTime = eventStartTime ? DateTime.fromISO(eventStartTime).toLocaleString(DateTime.TIME_SIMPLE)
+    + (eventEndTime ? " - " + DateTime.fromISO(eventEndTime).toLocaleString(DateTime.TIME_SIMPLE) : "")
+    : "No time specified";
+
+  const shortDescription = description.length > 100 ? description.substring(0, 100) + "..." : description;
+
   const classes = useStyles();
   return (
     <Box className={isMobile ? classes.cardContainerMobile : classes.cardContainer}>
       <Box className={classes.topCardPartition}>
         <Box className={classes.titlingTextContainer}>
-          <Typography className={classes.title}>{name}</Typography>
-          <Typography className={classes.subtitle}>Insert short description here</Typography>
+          <Typography className={classes.title}>{title}</Typography>
+          <Typography className={classes.subtitle}>{shortDescription}</Typography>
         </Box>
-        <FavoriteIcon className={classes.heartIcon} fontSize='large' />
+        <HeartButton _id={_id} isSaved={isSaved} />
       </Box>
       <Box className={classes.detailsContainer}>
         <Box className={classes.detailFieldContainer}>
           <EventNoteIcon />
-          <Typography className={classes.detailFieldText}>03 Sep 2020</Typography>
+          <Typography className={classes.detailFieldText}>{eventDate}</Typography>
         </Box>
         <Box className={classes.detailFieldContainer}>
           <ScheduleIcon />
-          <Typography className={classes.detailFieldText}>5pm - 6pm</Typography>
+          <Typography className={classes.detailFieldText}>{eventTime}</Typography>
         </Box>
         <Box className={classes.detailFieldContainer}>
           <RoomIcon />
-          <Typography className={classes.detailFieldText}>Faculty of Science</Typography>
+          <Typography className={classes.detailFieldText}>{location}</Typography>
         </Box>
 
       </Box>
-      <LongButton buttonText='Learn More' />
+      <Link style={{ width: '100%', textDecoration: "none" }} to={`/details/${_id}`}>
+        <LongButton buttonText='Learn More' />
+      </Link>
     </Box>
   );
 }
