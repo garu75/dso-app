@@ -203,6 +203,7 @@ const LoginDisplay = (props: LoginProps) => {
   
   const [login] = useMutation<GetUserData, LoginInput>(LOGIN, {
     onCompleted: (data: any) => {
+      console.log('Logged In');
       document.cookie = 'signedin=true';
       history.replace({ pathname: '/' });
       setUserInfo({
@@ -224,7 +225,6 @@ const LoginDisplay = (props: LoginProps) => {
 
   const onFormSubmit = (event: any) => {
     event.preventDefault();
-    console.log('clicked');
     login({ variables: { email: value['email'], password: value['password'] } });
   }
 
