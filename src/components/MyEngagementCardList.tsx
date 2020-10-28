@@ -4,7 +4,7 @@ import { Typography, Box, Grid, Card, CardContent, IconButton } from '@material-
 import { EventNote, NavigateNext, Schedule } from '@material-ui/icons';
 import { Link } from 'react-router-dom';
 
-import { getEventDate, getEventTime } from '../components/EventDateAndTime';
+import { getEventSchedule, getEventTime } from '../components/EventDateAndTime';
 import { EngagementFields } from '../gql/queries/GetEngagements';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -80,7 +80,7 @@ const MyEngagementCardList = ({ engagements }: MyEngagementCardListProps) => {
                   <Box className={classes.detailFieldContainer}>
                     <EventNote />
                     <Typography className={classes.detailText}>
-                      {getEventDate(engagement.eventStartTime)}
+                      {getEventSchedule(engagement.eventStartTime, engagement.frequency)}
                     </Typography>
                   </Box>
                   <Box className={classes.detailFieldContainer}>
