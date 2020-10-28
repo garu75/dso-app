@@ -4,12 +4,12 @@ import EventNoteIcon from '@material-ui/icons/EventNote';
 import ScheduleIcon from '@material-ui/icons/Schedule';
 import RoomIcon from '@material-ui/icons/Room';
 import { useMediaQuery } from 'react-responsive';
-import { DateTime } from 'luxon';
 import { Link } from 'react-router-dom';
 
 import LongButton from './LongButton';
 import { EngagementFields } from '../gql/queries/GetEngagements';
 import HeartButton from './HeartButton';
+import { getEventDate, getEventTime } from '../components/EventDateAndTime';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -84,11 +84,8 @@ const EngagementCard = (props: EngagementCardProps) => {
 
   const { _id, title, description, location, eventStartTime, eventEndTime, isSaved } = props.engagement;
 
-  const eventDate = eventStartTime ? DateTime.fromISO(eventStartTime).toFormat('dd MMM y') : "No Date Specified";
-
-  const eventTime = eventStartTime ? DateTime.fromISO(eventStartTime).toLocaleString(DateTime.TIME_SIMPLE)
-    + (eventEndTime ? " - " + DateTime.fromISO(eventEndTime).toLocaleString(DateTime.TIME_SIMPLE) : "")
-    : "No time specified";
+  const eventDate = getEventDate(eventStartTime);
+  const eventTime = getEventTime(eventStartTime, eventEndTime);
 
   const shortDescription = description.length > 100 ? description.substring(0, 100) + "..." : description;
 

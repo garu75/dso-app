@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Box, Grid, Modal, Button, createStyles, makeStyles, Typography } from '@material-ui/core';
 import ShareIcon from '@material-ui/icons/Share';
-import { DateTime } from 'luxon';
 import { EventNote, Schedule, Room, Person, Update, List } from '@material-ui/icons';
 import { useMediaQuery } from 'react-responsive';
 import { useMutation, useQuery } from '@apollo/client';
@@ -13,6 +12,7 @@ import LongButton from '../components/LongButton';
 import { EngagementFields, GET_ENGAGEMENT } from '../gql/queries/GetEngagements';
 import HeartButton from '../components/HeartButton';
 import { ACCEPT_ENGAGEMENT, GetUserData } from '../gql/queries/UserQueries';
+import { getEventDate, getEventTime } from '../components/EventDateAndTime';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -250,7 +250,20 @@ const confirmationModal = (
   );
 };
 
-const EngagementDetail = ({ match, history, userInfo }: any) => {
+type UserInfo = {
+  isLoggedIn: boolean;
+  name: string;
+  profileImage: string;
+  acceptedEngagements: [];
+}
+
+type EngagementDetailProps = {
+  match: any;
+  history: any;
+  userInfo: UserInfo;
+}
+
+const EngagementDetail = ({ match, history, userInfo }: EngagementDetailProps) => {
   const isMobile = useMediaQuery({ query: '(max-width: 1224px)' });
   const isSmallPhone = useMediaQuery({ query: '(max-device-height: 800px)' });
   const [showModal, setShowModal] = useState<boolean>(false);
@@ -268,7 +281,7 @@ const EngagementDetail = ({ match, history, userInfo }: any) => {
   const [acceptEngagement] = useMutation<GetUserData, { [key: string]: string }>(ACCEPT_ENGAGEMENT, {
     onCompleted: (data: any) => {
       console.log(data);
-      //history.push('/myengagements');
+      history.push('/myengagements');
     },
     onError: (err: any) => console.log(err)
   });
@@ -281,12 +294,9 @@ const EngagementDetail = ({ match, history, userInfo }: any) => {
 
   const { _id, title, description, location, frequency, engagementType,
     eventStartTime, eventEndTime, skillsRequired, isSaved, status } = data.result;
-
-  const eventDate = eventStartTime ? DateTime.fromISO(eventStartTime).toFormat('dd MMM y') : "No Date Specified";
-
-  const eventTime = eventStartTime ? DateTime.fromISO(eventStartTime).toLocaleString(DateTime.TIME_SIMPLE)
-    + (eventEndTime ? " - " + DateTime.fromISO(eventEndTime).toLocaleString(DateTime.TIME_SIMPLE) : "")
-    : "No time specified";
+    
+  const eventDate = getEventDate(eventStartTime);
+  const eventTime = getEventTime(eventStartTime, eventEndTime);
 
   const skillsString = skillsRequired.length !== 0 ? skillsRequired.join(", ") : "No Experience Required";
 
@@ -352,9 +362,9 @@ const EngagementDetail = ({ match, history, userInfo }: any) => {
                 <Box className={classes.detailDescriptionContainerDesktop}>
                   <Typography className={classes.detailTextDesktop}>{description}</Typography>
                 </Box>
-                { statusString === "unassigned" ?
-                <LongButton className={classes.buttonDesktop} buttonText='Apply' onClick={() => setShowModal(true)} /> :
-                <Typography className={classes.statusTextDesktop}>{statusString}</Typography>
+                {statusString === "unassigned" ?
+                  <LongButton className={classes.buttonDesktop} buttonText='Apply' onClick={() => setShowModal(true)} /> :
+                  <Typography className={classes.statusTextDesktop}>{statusString}</Typography>
                 }
               </Box>
               <Box className={classes.detailRightPartitionDesktopWrapper}>

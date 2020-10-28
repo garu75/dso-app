@@ -13,6 +13,8 @@ import appTheme, { appColors } from '../theme/globalTheme';
 import { GET_MY_INFO, LOGOUT } from '../gql/queries/UserQueries';
 import Footer from '../components/Footer';
 import Menubar from '../components/Menubar';
+import MyEngagementsDisplay from './MyEngagementsDisplay';
+import BookmarkedEngagementsDisplay from './BookmarkedEngagementsDisplay';
 
 type UserInfo = {
   isLoggedIn: boolean;
@@ -69,6 +71,8 @@ const HomeDisplay = (props: any) => {
         <Route path="/register" component={RegistrationDisplay} />
         {userInfo['isLoggedIn'] && <Route path='/profile' component={UserProfileDisplay} />}
         <Route exact path='/' component={EngagementsDisplay} />
+        <Route exact path='/bookmarked' component={BookmarkedEngagementsDisplay} />
+        <Route exact path='/myengagements' component={MyEngagementsDisplay} />
         <Route path='/details/:id' render={engagementDetailProps =>
           <EngagementDetail userInfo={userInfo} {...engagementDetailProps} />} />
       </Switch>
