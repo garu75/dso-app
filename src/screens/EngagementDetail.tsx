@@ -12,7 +12,7 @@ import LongButton from '../components/LongButton';
 import { EngagementFields, GET_ENGAGEMENT } from '../gql/queries/GetEngagements';
 import HeartButton from '../components/HeartButton';
 import { ACCEPT_ENGAGEMENT, GetUserData } from '../gql/queries/UserQueries';
-import { getEventDate, getEventTime } from '../components/EventDateAndTime';
+import { getEventDate, getEventSchedule, getEventTime } from '../components/EventDateAndTime';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -57,10 +57,12 @@ const useStyles = makeStyles(() =>
     title: {
       fontWeight: 700,
       fontSize: 20,
+      color: '#5C6093'
     },
     titleDesktop: {
       fontWeight: 700,
       fontSize: 36,
+      color: '#5C6093'
     },
     heartIcon: {
       marginLeft: 18,
@@ -296,6 +298,7 @@ const EngagementDetail = ({ match, history, userInfo }: EngagementDetailProps) =
     eventStartTime, eventEndTime, skillsRequired, isSaved, status } = data.result;
     
   const eventDate = getEventDate(eventStartTime);
+  const eventSchedule = getEventSchedule(eventStartTime, frequency);
   const eventTime = getEventTime(eventStartTime, eventEndTime);
 
   const skillsString = skillsRequired.length !== 0 ? skillsRequired.join(", ") : "No Experience Required";
@@ -331,7 +334,7 @@ const EngagementDetail = ({ match, history, userInfo }: EngagementDetailProps) =
             </Box>
             <Box className={classes.detailFieldContainer}>
               <EventNote className={classes.detailIcon} />
-              <Typography className={classes.detailText}>{eventDate}</Typography>
+              <Typography className={classes.detailText}>{eventSchedule}</Typography>
             </Box>
             <Box className={classes.detailFieldContainer}>
               <Schedule className={classes.detailIcon} />
@@ -339,7 +342,7 @@ const EngagementDetail = ({ match, history, userInfo }: EngagementDetailProps) =
             </Box>
             <Box className={classes.detailFieldContainer}>
               <Update className={classes.detailIcon} />
-              <Typography className={classes.detailText}>{frequency}</Typography>
+              <Typography className={classes.detailText}>From: {eventDate}</Typography>
             </Box>
             <Box className={classes.detailFieldContainer}>
               <Room className={classes.detailIcon} />

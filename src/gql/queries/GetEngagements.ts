@@ -1,8 +1,20 @@
 import { gql } from '@apollo/client';
 
-export interface GetEngagementsVariables {
-  startId: string;
+export type SortSettings = {
+  sortField: string;
+  order: number;
+  skip: number;
   perPage: number;
+}
+
+export type FilterFields = {
+  field: string | null;
+  fieldValues: string[];
+}
+
+export interface GetEngagementsVariables {
+  sortSettings: SortSettings;
+  filterFields: FilterFields;
 }
 
 export interface GetEngagementsData {
@@ -35,8 +47,8 @@ export interface EngagementFields {
 }
 
 export const GET_ENGAGEMENTS = gql`
-  query getEngagements($startId: ID!, $perPage: Int!) {
-    result: getEngagements(startId: $startId, perPage: $perPage) {
+  query getEngagements($sortSettings: SortSettings!, $filterFields: FilterFields!) {
+    result: getEngagements(sortSettings: $sortSettings, filterFields: $filterFields) {
       _id
       title
       frequency

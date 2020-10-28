@@ -9,7 +9,7 @@ import { Link } from 'react-router-dom';
 import LongButton from './LongButton';
 import { EngagementFields } from '../gql/queries/GetEngagements';
 import HeartButton from './HeartButton';
-import { getEventDate, getEventTime } from '../components/EventDateAndTime';
+import { getEventDate, getEventSchedule, getEventTime } from '../components/EventDateAndTime';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -37,7 +37,7 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     cardContainerMobile: {
       backgroundColor: '#fff',
-      width: 324,
+      width: '80vw',
       height: 220,
       display: 'flex',
       flexDirection: 'column',
@@ -82,9 +82,9 @@ interface EngagementCardProps {
 const EngagementCard = (props: EngagementCardProps) => {
   const isMobile = useMediaQuery({ query: '(max-width: 1224px)' });
 
-  const { _id, title, description, location, eventStartTime, eventEndTime, isSaved } = props.engagement;
+  const { _id, title, description, location, eventStartTime, eventEndTime, isSaved, frequency } = props.engagement;
 
-  const eventDate = getEventDate(eventStartTime);
+  const eventDate = getEventSchedule(eventStartTime, frequency);
   const eventTime = getEventTime(eventStartTime, eventEndTime);
 
   const shortDescription = description.length > 100 ? description.substring(0, 100) + "..." : description;

@@ -175,7 +175,7 @@ const firstPageRender = (
     >
 
       {/* Name Field */}
-      <Grid item xs={12}>
+      <Grid item>
         <Grid
           container
           spacing={1}
@@ -195,7 +195,7 @@ const firstPageRender = (
       </Grid>
 
       {/* Phone Field */}
-      <Grid item xs={12}>
+      <Grid item>
         <Grid
           container
           spacing={1}
@@ -216,7 +216,7 @@ const firstPageRender = (
       </Grid>
 
       {/* Email Field */}
-      <Grid item xs={12}>
+      <Grid item>
         <Grid
           container
           spacing={1}
@@ -241,7 +241,7 @@ const firstPageRender = (
       </Grid>
 
       {/* Password Field */}
-      <Grid item xs={12}>
+      <Grid item>
         <Grid
           container
           spacing={1}
@@ -301,7 +301,7 @@ const secondPageRender = (
     >
 
       {/* Gender Field */}
-      <Grid item xs={12}>
+      <Grid item>
         <Grid
           container
           spacing={1}
@@ -331,7 +331,7 @@ const secondPageRender = (
       </Grid>
 
       {/* Timetable Field */}
-      <Grid item xs={12}>
+      <Grid item>
         <Grid
           container
           spacing={1}
@@ -352,7 +352,7 @@ const secondPageRender = (
       </Grid>
 
       {/* Year Field */}
-      <Grid item xs={12}>
+      <Grid item>
         <Grid
           container
           spacing={1}
@@ -377,7 +377,7 @@ const secondPageRender = (
       </Grid>
 
       {/* Faculty & Major Field */}
-      <Grid item xs={12}>
+      <Grid item>
         <Grid
           container
           spacing={1}
@@ -396,7 +396,7 @@ const secondPageRender = (
       </Grid>
 
       {/* Skills Field */}
-      <Grid item xs={12}>
+      <Grid item>
         <Grid
           container
           spacing={1}
@@ -434,7 +434,7 @@ const secondPageRender = (
       </Grid>
 
       {/* Volunteer Experience Field */}
-      <Grid item xs={12}>
+      <Grid item>
         <Grid
           container
           spacing={1}
