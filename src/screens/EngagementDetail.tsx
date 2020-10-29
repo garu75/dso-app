@@ -11,7 +11,7 @@ import Footer from '../components/Footer';
 import LongButton from '../components/LongButton';
 import { EngagementFields, GET_ENGAGEMENT } from '../gql/queries/GetEngagements';
 import HeartButton from '../components/HeartButton';
-import { ACCEPT_ENGAGEMENT, GetUserData } from '../gql/queries/UserQueries';
+import { APPLY_ENGAGEMENT, GetUserData } from '../gql/queries/UserQueries';
 import { getEventDate, getEventSchedule, getEventTime } from '../components/EventDateAndTime';
 
 const useStyles = makeStyles(() =>
@@ -280,7 +280,7 @@ const EngagementDetail = ({ match, history, userInfo }: EngagementDetailProps) =
     },
   );
 
-  const [acceptEngagement] = useMutation<GetUserData, { [key: string]: string }>(ACCEPT_ENGAGEMENT, {
+  const [acceptEngagement] = useMutation<GetUserData, { [key: string]: string }>(APPLY_ENGAGEMENT, {
     onCompleted: (data: any) => {
       console.log(data);
       history.push('/myengagements');
@@ -317,7 +317,6 @@ const EngagementDetail = ({ match, history, userInfo }: EngagementDetailProps) =
       <Box className={isMobile ? classes.headingContainer : classes.headingContainerDesktop}>
         <Typography className={isMobile ? classes.title : classes.titleDesktop}>{title}</Typography>
         <Box className={classes.iconButtonsContainer}>
-          <ShareIcon fontSize='large' style={{ color: '#EF7471' }} />
           <HeartButton _id={_id} isSaved={isSaved} />
         </Box>
       </Box>

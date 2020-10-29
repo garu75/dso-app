@@ -32,6 +32,7 @@ export interface GetUserData {
   year: number;
   experience: string;
   timetable: string;
+  pendingEngagements: [];
   completedEngagements: [];
   acceptedEngagements: [];
   savedEngagements: [];
@@ -50,6 +51,9 @@ mutation register($user: UserInput!) {
       year
       experience
       timetable
+      pendingEngagements {
+        title
+      }
       completedEngagements {
         title
       }
@@ -76,6 +80,9 @@ mutation login($email: String!, $password: String!) {
       year
       experience
       timetable
+      pendingEngagements {
+        title
+      }
       completedEngagements {
         title
       }
@@ -114,6 +121,18 @@ query getMyInfo {
       year
       experience
       timetable
+      pendingEngagements {
+        _id
+        title
+        engagementType
+        frequency
+        description
+        location
+        eventStartTime
+        eventEndTime
+        skillsRequired
+        status
+      }
       completedEngagements {
         _id
         title
@@ -167,6 +186,9 @@ mutation uploadProfileImage($profileImage: String!) {
       year
       experience
       timetable
+      pendingEngagements {
+        title
+      }
       completedEngagements {
         title
       }
@@ -193,6 +215,9 @@ mutation saveEngagement($engagementId: ID!) {
       year
       experience
       timetable
+      pendingEngagements {
+        title
+      }
       completedEngagements {
         title
       }
@@ -206,9 +231,9 @@ mutation saveEngagement($engagementId: ID!) {
 }
 `;
 
-export const ACCEPT_ENGAGEMENT = gql`
-mutation acceptEngagement($engagementId: ID!) {
-  acceptEngagement(engagementId: $engagementId) {
+export const APPLY_ENGAGEMENT = gql`
+mutation applyEngagement($engagementId: ID!) {
+  applyEngagement(engagementId: $engagementId) {
       name
       phone
       email
@@ -219,6 +244,9 @@ mutation acceptEngagement($engagementId: ID!) {
       year
       experience
       timetable
+      pendingEngagements {
+        title
+      }
       completedEngagements {
         title
       }

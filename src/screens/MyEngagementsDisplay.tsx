@@ -54,12 +54,14 @@ const MyEngagementsDisplay = () => {
     return <div />;
   }
 
-  const { acceptedEngagements, completedEngagements } = data.getMyInfo;
+  const { pendingEngagements, acceptedEngagements, completedEngagements } = data.getMyInfo;
 
   return (
     <Box className={classes.rootContainer}>
       <Typography variant={'h4'} className={classes.title}>My Engagements</Typography>
       <Box>
+        <Typography className={classes.subtitle}>Pending</Typography>
+        <MyEngagementCardList engagements={pendingEngagements} />
         <Typography className={classes.subtitle}>Upcoming</Typography>
         <MyEngagementCardList engagements={acceptedEngagements} />
         <Typography className={classes.subtitle}>Completed</Typography>
