@@ -90,6 +90,7 @@ const UserProfileDisplay = () => {
     year: -1,
     experience: '',
     timetable: '',
+    pendingEngagements: [],
     completedEngagements: [],
     acceptedEngagements: [],
     savedEngagements: []
